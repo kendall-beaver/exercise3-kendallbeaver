@@ -44,11 +44,19 @@ pacman::p_load(
 
 options(digits=3)
 
-### The zoo data ###
+### Training and Test Data ###
 
 data(Zoo, package="mlbench")
 Zoo <- as.data.frame(Zoo)
 Zoo |> glimpse()
+
+### 80% Training Data ###
+
+set.seed(123)  # for reproducibility
+inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]]
+Zoo_train <- dplyr::slice(Zoo, inTrain)
+Zoo_test <- dplyr::slice(Zoo, -inTrain)
+
 
 
 ```

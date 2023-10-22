@@ -13,7 +13,7 @@ editor: visual
 #
 ########################################################
 
-### Install packages ### Show fewer digits
+### Install packages ###
 
 if(!require(pacman))
   install.packages("pacman")
@@ -40,10 +40,15 @@ pacman::p_load(
   xgboost             # Extreme Gradient Boosting
 )
 
-### Install packages: Show fewer digits
+### Install packages: Show fewer digits ###
 
 options(digits=3)
 
+### The zoo data ###
+
+data(Zoo, package="mlbench")
+Zoo <- as.data.frame(Zoo)
+Zoo |> glimpse()
 
 
 ```

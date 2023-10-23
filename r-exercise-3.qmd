@@ -103,5 +103,9 @@ knnFit <- Zoo_train |> train(type ~ .,
     trControl = trainControl(method = "cv", indexOut = train_index))
 knnFit
 
+knnFit$finalModel
+
+### PART (Rule-based classifier) ###
+
 
 ```

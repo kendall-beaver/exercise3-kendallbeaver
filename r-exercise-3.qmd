@@ -74,6 +74,6 @@ ctreeFit <- Zoo_train |> train(type ~ .,
     trControl = trainControl(method = "cv", indexOut = train_index))
 ctreeFit
 
-
+plot(ctreeFit$finalModel)
 
 ```

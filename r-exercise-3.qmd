@@ -57,15 +57,23 @@ inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]]
 Zoo_train <- dplyr::slice(Zoo, inTrain)
 Zoo_test <- dplyr::slice(Zoo, -inTrain)
 
-####################################################################
-###
 ### Fitting Different Classification Models to the Training Data
 ###
-### Creating an index for the training data.
+### (Creating an index for our training data.)
 ###
-####################################################################
+### This is how we'll compare the models later and find the best fit.
 
 train_index <- createFolds(Zoo_train$type, k = 10)
+
+### Conditional Inference Tree (Decision Tree)
+
+ctreeFit <- Zoo_train |> train(type ~ .,
+  method = "ctree",
+  data = _,
+    tuneLength = 5,
+    trControl = trainControl(method = "cv", indexOut = train_index))
+ctreeFit
+
 
 
 ```

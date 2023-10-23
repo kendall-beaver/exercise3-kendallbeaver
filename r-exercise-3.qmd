@@ -57,27 +57,15 @@ inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]]
 Zoo_train <- dplyr::slice(Zoo, inTrain)
 Zoo_test <- dplyr::slice(Zoo, -inTrain)
 
+####################################################################
+###
+### Fitting Different Classification Models to the Training Data
+###
+### Creating an index for the training data.
+###
+####################################################################
+
+train_index <- createFolds(Zoo_train$type, k = 10)
 
 
 ```
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).

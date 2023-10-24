@@ -33,6 +33,7 @@ pacman::p_load(
   partykit,           # A Toolkit for Recursive Partytioning
   randomForest,       # Breiman and Cutler's Random Forests for Classification and Regression
   FSelector,          # This will bring in "RWeka & also randomForest, et al." 
+  rJava,              # I think this is needed for RWeka so I'll add it here
   rpart,              # Recursive partitioning models
   RWeka,              # R/Weka Interface
   scales,             # Scale Functions for Visualization
@@ -83,12 +84,12 @@ plot(ctreeFit$finalModel)
 ###  attempts; so I'm going to comment it out for now.)
 
 
-#C45Fit <- Zoo_train |> train(type ~ .,
-#  method = "J48",
-#  data = _,
-#    tuneLength = 5,
-#    trControl = trainControl(method = "cv", indexOut = train_index))
-#C45Fit
+C45Fit <- Zoo_train |> train(type ~ .,
+  method = "J48",
+  data = _,
+    tuneLength = 5,
+    trControl = trainControl(method = "cv", indexOut = train_index))
+C45Fit
 
 #C45Fit$finalModel
 

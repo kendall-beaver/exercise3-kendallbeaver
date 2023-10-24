@@ -289,10 +289,12 @@ data("penguins")
 penguins <- as_tibble(penguins) |>
   drop_na()
 
-### Three classes 
-### (note: MASS also has a select function which hides dplyr's select)
+###### Three classes 
+###### (note: MASS also has a select function which hides dplyr's select)
 x <- penguins |> dplyr::select(bill_length_mm, bill_depth_mm, species)
 x
+
+###### We're just using "ggplot" to plot bill length and bill depth and show ###### it as a contour map with colors.
 
 ggplot(x, aes(x = bill_length_mm, y = bill_depth_mm, fill = species)) +  
   stat_density_2d(geom = "polygon", aes(alpha = after_stat(level))) +
@@ -302,6 +304,16 @@ ggplot(x, aes(x = bill_length_mm, y = bill_depth_mm, fill = species)) +
        y = "Bill depth (mm)",
        fill = "Species",
        alpha = "Density")
+
+###### K-Nearest Neighbors Classifier
+
+model <- x |> caret::knn3(species ~ ., data = _, k = 1)
+decisionplot(model, x, class_var = "species") + 
+  labs(title = "kNN (1 neighbor)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
 
 
 ```

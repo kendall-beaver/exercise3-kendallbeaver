@@ -469,5 +469,55 @@ decisionplot(model, x, class_var  = "species",
 
 ###### NN (2 Neurons)
 
+model <-x |> nnet::nnet(species ~ ., data = _, size = 2, trace = FALSE)
+decisionplot(model, x, class_var  = "species", 
+  predict_type = c("class", "raw")) + 
+  labs(title = "NN (2 neurons)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
+
+###### NN (4 Neurons)
+
+model <-x |> nnet::nnet(species ~ ., data = _, size = 4, trace = FALSE)
+decisionplot(model, x, class_var  = "species", 
+  predict_type = c("class", "raw")) + 
+  labs(title = "NN (4 neurons)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
+
+###### NN (10 Neurons)
+
+model <-x |> nnet::nnet(species ~ ., data = _, size = 10, trace = FALSE)
+decisionplot(model, x, class_var  = "species", 
+  predict_type = c("class", "raw")) + 
+  labs(title = "NN (10 neurons)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
+
+### Circle Dataset
+###
+### This is a new dataset that we'll be performing the above analysis on.
+
+set.seed(1000)
+
+x <- mlbench::mlbench.circle(500)
+###x <- mlbench::mlbench.cassini(500)
+###x <- mlbench::mlbench.spirals(500, sd = .1)
+###x <- mlbench::mlbench.smiley(500)
+x <- cbind(as.data.frame(x$x), factor(x$classes))
+colnames(x) <- c("x", "y", "class")
+x <- as_tibble(x)
+x
+
+ggplot(x, aes(x = x, y = y, color = class)) + 
+  geom_point() +
+  theme_minimal(base_size = 14)
+
 
 ```

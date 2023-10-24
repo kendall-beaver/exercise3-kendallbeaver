@@ -307,6 +307,8 @@ ggplot(x, aes(x = bill_length_mm, y = bill_depth_mm, fill = species)) +
 
 ###### K-Nearest Neighbors Classifier
 
+######### kNN (1 neighbor)
+
 model <- x |> caret::knn3(species ~ ., data = _, k = 1)
 decisionplot(model, x, class_var = "species") + 
   labs(title = "kNN (1 neighbor)",
@@ -314,6 +316,28 @@ decisionplot(model, x, class_var = "species") +
        y = "Bill depth (mm)",
        shape = "Species",
        fill = "Prediction")
+
+######### kNN (3 neighbor)
+
+model <- x |> caret::knn3(species ~ ., data = _, k = 3)
+decisionplot(model, x, class_var = "species") + 
+  labs(title = "kNN (3 neighbor)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
+
+######### kNN (9 neighbor)
+
+model <- x |> caret::knn3(species ~ ., data = _, k = 9)
+decisionplot(model, x, class_var = "species") + 
+  labs(title = "kNN (9 neighbor)",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction")
+
+###### Naive Bayes Classifier
 
 
 ```

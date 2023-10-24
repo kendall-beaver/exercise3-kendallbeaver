@@ -8,69 +8,6 @@ editor: visual
 
 ########################################################
 #
-#                     Exercise 3 - Part I:
-#
-#       Classification: Basic Concepts and Techniques
-#
-########################################################
-
-if(!require(pacman))
-  install.packages("pacman")
-
-pacman::p_load(tidyverse, rpart, rpart.plot, caret, 
-  lattice, FSelector, sampling, pROC, mlbench)
-
-### Dataset we'll be working with
-
-data(Zoo, package="mlbench")
-head(Zoo)
-
-library(tidyverse)
-as_tibble(Zoo, rownames = "animal")
-
-Zoo <- Zoo |>
-  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE))) |>
-  mutate(across(where(is.character), factor))
-
-summary(Zoo)
-
-### Decision Trees
-
-library(rpart)
-
-### Create Tree With Default Settings (uses pre-pruning)
-
-tree_default <- Zoo |> 
-  rpart(type ~ ., data = _)
-tree_default
-
-library(rpart.plot)
-rpart.plot(tree_default, extra = 2)
-
-### Create a Full Tree (rpart.plot will create a plot)
-
-tree_full <- Zoo |> 
-  rpart(type ~ . , data = _, 
-        control = rpart.control(minsplit = 2, cp = 0))
-rpart.plot(tree_full, extra = 2, 
-           roundint=FALSE,
-            box.palette = list("Gy", "Gn", "Bu", "Bn", 
-                               "Or", "Rd", "Pu")) # specify 7 colors
-
-tree_full # This will show the tree in terminal format.
-
-predict(tree_default, Zoo) |> head ()
-
-
-
-### 
-
-
-
-
-
-########################################################
-#
 #                     Exercise 3.1 - Part II: 
 #
 #         Classification: Alternative Techniques
@@ -104,6 +41,7 @@ pacman::p_load(
   tidymodels,         # Tidy machine learning framework
   tidyverse,          # Tidy data wrangling and visualization
   xgboost             # Extreme Gradient Boosting
+  snow
 )
 
 ### Install packages: Show fewer digits ###
@@ -734,6 +672,133 @@ decisionplot(model, x, class_var = "class",
   labs(title = "NN (10 neurons)",
        shape = "Class",
        fill = "Prediction")
+
+########################################################
+#
+#                     Exercise 3 - Part I:
+#
+#       Classification: Basic Concepts and Techniques
+#
+########################################################
+
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, rpart, rpart.plot, caret, 
+  lattice, FSelector, sampling, pROC, mlbench)
+
+### Dataset we'll be working with
+
+data(Zoo, package="mlbench")
+head(Zoo)
+
+library(tidyverse)
+as_tibble(Zoo, rownames = "animal")
+
+Zoo <- Zoo |>
+  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE))) |>
+  mutate(across(where(is.character), factor))
+
+summary(Zoo)
+
+### Decision Trees
+
+library(rpart)
+
+### Create Tree With Default Settings (uses pre-pruning)
+
+tree_default <- Zoo |> 
+  rpart(type ~ ., data = _)
+tree_default
+
+library(rpart.plot)
+rpart.plot(tree_default, extra = 2)
+
+### Create a Full Tree (rpart.plot will create a plot)
+
+tree_full <- Zoo |> 
+  rpart(type ~ . , data = _, 
+        control = rpart.control(minsplit = 2, cp = 0))
+rpart.plot(tree_full, extra = 2, 
+           roundint=FALSE,
+            box.palette = list("Gy", "Gn", "Bu", "Bn", 
+                               "Or", "Rd", "Pu")) # specify 7 colors
+
+tree_full # This will show the tree in terminal format.
+
+predict(tree_default, Zoo) |> head ()
+
+pred <- predict(tree_default, Zoo, type="class")
+head(pred)
+
+confusion_table <- with(Zoo, table(type, pred))
+confusion_table
+
+correct <- confusion_table |> diag() |> sum()
+correct
+
+error <- confusion_table |> sum() - correct
+error
+
+accuracy <- correct / (correct + error)
+accuracy
+
+accuracy <- function(truth, prediction) {
+    tbl <- table(truth, prediction)
+    sum(diag(tbl))/sum(tbl)
+}
+
+accuracy(Zoo |> pull(type), pred)
+
+accuracy(Zoo |> pull(type), 
+         predict(tree_full, Zoo, type = "class"))
+
+library(caret)
+confusionMatrix(data = pred, 
+                reference = Zoo |> pull(type))
+
+### Make Predictions for New Data
+
+###### Make up my own animal: A lion with feathered wings
+
+my_animal <- tibble(hair = TRUE, feathers = TRUE, eggs = FALSE,
+  milk = TRUE, airborne = TRUE, aquatic = FALSE, predator = TRUE,
+  toothed = TRUE, backbone = TRUE, breathes = TRUE, venomous = FALSE,
+  fins = FALSE, legs = 4, tail = TRUE, domestic = FALSE,
+  catsize = FALSE, type = NA)
+
+my_animal <- my_animal |> 
+  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE)))
+my_animal
+
+predict(tree_default , my_animal, type = "class")
+
+### Model Evaluation with Caret
+
+library(caret)
+
+## Windows backend
+library(doParallel)
+cl <- makeCluster(4, type="SOCK")
+registerDoParallel(cl)
+
+set.seed(2000)
+
+### Hold out Test Data
+###
+### I've already created training and testing data. Skipping section.
+
+### Learn a Model and Tune Hyperparameters on the Training Data
+
+fit <- Zoo_train |>
+  train(type ~ .,
+    data = _ ,
+    method = "rpart",
+    control = rpart.control(minsplit = 2),
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 5)
+
+fit
 
 
 ```

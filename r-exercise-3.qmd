@@ -106,4 +106,26 @@ knnFit
 knnFit$finalModel
 
 ### PART (Rule-based classifier) ###
+
+rulesFit <- Zoo_train |> train(type ~ .,
+  method = "PART",
+  data = _,
+  tuneLength = 5,
+  trControl = trainControl(method = "cv", indexOut = train_index))
+rulesFit
+
+rulesFit$finalModel
+
+### Linear Support Vector Machines ###
+
+svmFit <- Zoo_train |> train(type ~.,
+  method = "svmLinear",
+  data = _,
+    tuneLength = 5,
+    trControl = trainControl(method = "cv", indexOut = train_index))
+svmFit
+
+svmFit$finalModel
+
+
 ```

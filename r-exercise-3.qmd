@@ -159,4 +159,16 @@ xgboostFit <- Zoo_train |> train(type ~ .,
 xgboostFit
 
 xgboostFit$finalModel
+
+### Artificial Neural Network ###
+
+nnetFit <- Zoo_train |> train(type ~ .,
+  method = "nnet",
+  data = _,
+    tuneLength = 5,
+    trControl = trainControl(method = "cv", indexOut = train_index),
+  trace = FALSE)
+nnetFit
+
+nnetFit$finalModel
 ```

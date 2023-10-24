@@ -171,4 +171,20 @@ nnetFit <- Zoo_train |> train(type ~ .,
 nnetFit
 
 nnetFit$finalModel
+
+### Comparing Models ###
+
+resamps <- resamples(list(
+  ctree = ctreeFit,
+  C45 = C45Fit,
+  SVM = svmFit,
+  KNN = knnFit,
+  rules = rulesFit,
+  randomForest = randomForestFit,
+  xgboost = xgboostFit,
+  NeuralNet = nnetFit
+    ))
+resamps
+
+summary(resamps)
 ```

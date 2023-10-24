@@ -565,5 +565,84 @@ decisionplot(model, x, class_var = "class") +
        shape = "Class",
        fill = "Prediction")
 
+### Decision Trees
 
+###### CART
+
+model <- x |> rpart::rpart(class ~ ., data = _)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "CART",
+       shape = "Class",
+       fill = "Prediction")
+
+###### CART (Overfitting)
+
+model <- x |> rpart::rpart(class ~ ., data = _,
+  control = rpart.control(cp = 0.001, minsplit = 1))
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "CART (overfitting)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### C5.0
+
+model <- x |> C50::C5.0(class ~ ., data = _)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "C5.0",
+       shape = "Class",
+       fill = "Prediction")
+
+###### Random Forest
+
+library(randomForest)
+model <- x |> randomForest(class ~ ., data = _)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "Random Forest",
+       shape = "Class",
+       fill = "Prediction")
+
+###### SVM
+
+model <- x |> e1071::svm(class ~ ., data = _, kernel = "linear")
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "SVM (linear kernel)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### SVM (Radial Kernel)
+
+model <- x |> e1071::svm(class ~ ., data = _, kernel = "radial")
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "SVM (radial kernel)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### SVM (Polynomial Kernel)
+
+model <- x |> e1071::svm(class ~ ., data = _, kernel = "polynomial")
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "SVM (polynomial kernel)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### SVM (Sigmoid Kernel)
+
+model <- x |> e1071::svm(class ~ ., data = _, kernel = "sigmoid")
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "SVM (sigmoid kernel)",
+       shape = "Class",
+       fill = "Prediction")
+
+### Single Layer Feed-forward Neural Networks
+
+###### NN (1 Neuron)
+
+model <-x |> nnet::nnet(class ~ ., data = _, size = 1, trace = FALSE)
+decisionplot(model, x, class_var = "class", 
+  predict_type = c("class")) + 
+  labs(title = "NN (1 neuron)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### 
 ```

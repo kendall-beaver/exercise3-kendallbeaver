@@ -47,6 +47,22 @@ tree_default
 library(rpart.plot)
 rpart.plot(tree_default, extra = 2)
 
+### Create a Full Tree (rpart.plot will create a plot)
+
+tree_full <- Zoo |> 
+  rpart(type ~ . , data = _, 
+        control = rpart.control(minsplit = 2, cp = 0))
+rpart.plot(tree_full, extra = 2, 
+           roundint=FALSE,
+            box.palette = list("Gy", "Gn", "Bu", "Bn", 
+                               "Or", "Rd", "Pu")) # specify 7 colors
+
+tree_full # This will show the tree in terminal format.
+
+predict(tree_default, Zoo) |> head ()
+
+
+
 ### 
 
 

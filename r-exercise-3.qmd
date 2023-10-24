@@ -519,5 +519,51 @@ ggplot(x, aes(x = x, y = y, color = class)) +
   geom_point() +
   theme_minimal(base_size = 14)
 
+###### K-Nearest Neighbors Classifier
+
+######### kNN (1 Neighbor)
+
+model <- x |> caret::knn3(class ~ ., data = _, k = 1)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "kNN (1 neighbor)",
+       shape = "Class",
+       fill = "Prediction")
+
+######### kNN (10 Neighbor)
+
+model <- x |> caret::knn3(class ~ ., data = _, k = 10)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "kNN (10 neighbor)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### Naive Bayes Classifier
+
+model <- x |> e1071::naiveBayes(class ~ ., data = _)
+decisionplot(model, x, class_var = "class", 
+  predict_type = c("class", "raw")) + 
+  labs(title = "naive Bayes",
+       shape = "Class",
+       fill = "Prediction")
+
+###### Linear Discriminant Analysis
+######
+###### (LDA cannot find a good model since the true decision boundary is not ######  linear.)
+
+model <- x |> MASS::lda(class ~ ., data = _)
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "LDA",
+       shape = "Class",
+       fill = "Prediction")
+
+###### Logistic Regression (implemented in nnet)
+
+model <- x |> nnet::multinom(class ~., data = _)
+
+decisionplot(model, x, class_var = "class") + 
+  labs(title = "Multinomial Logistic Regression",
+       shape = "Class",
+       fill = "Prediction")
+
 
 ```

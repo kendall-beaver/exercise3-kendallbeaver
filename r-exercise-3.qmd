@@ -127,5 +127,14 @@ svmFit
 
 svmFit$finalModel
 
+### Random Forest ###
+
+randomForestFit <- Zoo_train |> train(type ~ .,
+  method = "rf",
+  data = _,
+    tuneLength = 5,
+    trControl = trainControl(method = "cv", indexOut = train_index))
+randomForestFit
+
 
 ```

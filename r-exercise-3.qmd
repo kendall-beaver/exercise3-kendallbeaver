@@ -197,7 +197,15 @@ difs
 summary(difs)
 
 ### Applying the Chosen Model to the Test Data ###
+###
+### Taking our test data and applying it to the RF model using the "predict" function from R's stat package.
 
 pr <- predict(randomForestFit, Zoo_test)
 pr
+
+confusionMatrix(pr, reference = Zoo_test$type)
+
+### Comparing Decision Boundaries of Popular Classification Techniques ###
+
+
 ```

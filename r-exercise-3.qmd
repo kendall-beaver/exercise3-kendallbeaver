@@ -800,5 +800,10 @@ fit <- Zoo_train |>
 
 fit
 
+rpart.plot(fit$finalModel, extra = 2,
+  box.palette = list("Gy", "Gn", "Bu", "Bn", "Or", "Rd", "Pu"))
+
+varImp(fit)
+
 
 ```

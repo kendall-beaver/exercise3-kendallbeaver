@@ -7,7 +7,55 @@ editor: visual
 ```{r}
 
 ########################################################
-#                     Exercise 3.1
+#
+#                     Exercise 3 - Part I:
+#
+#       Classification: Basic Concepts and Techniques
+#
+########################################################
+
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, rpart, rpart.plot, caret, 
+  lattice, FSelector, sampling, pROC, mlbench)
+
+### Dataset we'll be working with
+
+data(Zoo, package="mlbench")
+head(Zoo)
+
+library(tidyverse)
+as_tibble(Zoo, rownames = "animal")
+
+Zoo <- Zoo |>
+  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE))) |>
+  mutate(across(where(is.character), factor))
+
+summary(Zoo)
+
+### Decision Trees
+
+library(rpart)
+
+### Create Tree With Default Settings (uses pre-pruning)
+
+tree_default <- Zoo |> 
+  rpart(type ~ ., data = _)
+tree_default
+
+library(rpart.plot)
+rpart.plot(tree_default, extra = 2)
+
+### 
+
+
+
+
+
+########################################################
+#
+#                     Exercise 3.1 - Part II: 
 #
 #         Classification: Alternative Techniques
 #
@@ -644,5 +692,32 @@ decisionplot(model, x, class_var = "class",
        shape = "Class",
        fill = "Prediction")
 
-###### 
+###### NN (2 Neurons)
+
+model <-x |> nnet::nnet(class ~ ., data = _, size = 2, trace = FALSE)
+decisionplot(model, x, class_var = "class", 
+  predict_type = c("class")) + 
+  labs(title = "NN (2 neurons)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### NN (4 Neurons)
+
+model <-x |> nnet::nnet(class ~ ., data = _, size = 4, trace = FALSE)
+decisionplot(model, x, class_var = "class", 
+  predict_type = c("class")) + 
+  labs(title = "NN (4 neurons)",
+       shape = "Class",
+       fill = "Prediction")
+
+###### NN (10 Neurons)
+
+model <-x |> nnet::nnet(class ~ ., data = _, size = 10, trace = FALSE)
+decisionplot(model, x, class_var = "class", 
+  predict_type = c("class")) + 
+  labs(title = "NN (10 neurons)",
+       shape = "Class",
+       fill = "Prediction")
+
+
 ```

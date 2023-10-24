@@ -50,8 +50,8 @@ options(digits=3)
 
 data(Zoo, package="mlbench")
 Zoo <- as.data.frame(Zoo)
-#Zoo <- as_tibble(Zoo)
 Zoo |> glimpse()
+#Zoo
 
 ### 80% Training Data ###
 
@@ -59,6 +59,8 @@ set.seed(123)  # for reproducibility
 inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]] #we're using this function from the caret library to split data into "test/training" partitions.
 Zoo_train <- dplyr::slice(Zoo, inTrain)
 Zoo_test <- dplyr::slice(Zoo, -inTrain)
+#Zoo_train
+#Zoo_test
 
 ### Fitting Different Classification Models to the Training Data ###
 ### 

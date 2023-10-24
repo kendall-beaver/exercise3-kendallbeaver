@@ -50,24 +50,23 @@ options(digits=3)
 
 data(Zoo, package="mlbench")
 Zoo <- as.data.frame(Zoo)
+#Zoo <- as_tibble(Zoo)
 Zoo |> glimpse()
 
 ### 80% Training Data ###
 
 set.seed(123)  # for reproducibility
-inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]]
+inTrain <- createDataPartition(y = Zoo$type, p = .8)[[1]] #we're using this function from the caret library to split data into "test/training" partitions.
 Zoo_train <- dplyr::slice(Zoo, inTrain)
 Zoo_test <- dplyr::slice(Zoo, -inTrain)
 
-### Fitting Different Classification Models to the Training Data
-###
-### (Creating an index for our training data.)
-###
-### This is how we'll compare the models later and find the best fit.
+### Fitting Different Classification Models to the Training Data ###
+### 
+### Creating an index for our training data. This "organization" is how we'll compare the models later and find the best fit.
 
 train_index <- createFolds(Zoo_train$type, k = 10)
 
-### Conditional Inference Tree (Decision Tree)
+### Conditional Inference Tree (Decision Tree) ###
 
 ctreeFit <- Zoo_train |> train(type ~ .,
   method = "ctree",
@@ -79,9 +78,8 @@ ctreeFit
 plot(ctreeFit$finalModel)
 
 ### C 4.5 Decision Tree ###
-###
-### "J48" is the C4.5 decision tree algorithm to predict the class label of new
-### instances.
+
+### "J48" is the C4.5 decision tree algorithm to predict the class label of new instances.
 
 C45Fit <- Zoo_train |> train(type ~ .,
   method = "J48",
@@ -90,11 +88,9 @@ C45Fit <- Zoo_train |> train(type ~ .,
     trControl = trainControl(method = "cv", indexOut = train_index))
 C45Fit
 
-#C45Fit$finalModel
+C45Fit$finalModel
 
 ### K-Nearest Neighbors ###
-###
-### 
 
 knnFit <- Zoo_train |> train(type ~ .,
   method = "knn",
@@ -108,6 +104,43 @@ knnFit
 knnFit$finalModel
 
 ### PART (Rule-based classifier) ###
-
-
 ```
+
+```         
+```
+
+\`\`\`{### Fitting Different Classification Models to the Training Data} \### \### Creating an index for our training data. This "organization" is how we'll compare the models later and find the best fit.
+
+train_index \<- createFolds(Zoo_train\$type, k = 10)
+
+### Conditional Inference Tree (Decision Tree)
+
+ctreeFit \<- Zoo_train \|\> train(type \~ ., method = "ctree", data = \_, tuneLength = 5, trControl = trainControl(method = "cv", indexOut = train_index)) ctreeFit
+
+plot(ctreeFit\$finalModel)
+
+### C 4.5 Decision Tree
+
+### 
+
+### "J48" is the C4.5 decision tree algorithm to predict the class label of new
+
+### instances.
+
+C45Fit \<- Zoo_train \|\> train(type \~ ., method = "J48", data = \_, tuneLength = 5, trControl = trainControl(method = "cv", indexOut = train_index)) C45Fit
+
+#C45Fit\$finalModel
+
+### K-Nearest Neighbors
+
+### 
+
+### 
+
+knnFit \<- Zoo_train \|\> train(type \~ ., method = "knn", data = \_, preProcess = "scale", tuneLength = 5, tuneGrid=data.frame(k = 1:10), trControl = trainControl(method = "cv", indexOut = train_index)) knnFit
+
+knnFit\$finalModel
+
+### PART (Rule-based classifier)
+
+\`\`\`

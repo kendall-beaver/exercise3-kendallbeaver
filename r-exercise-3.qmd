@@ -339,5 +339,14 @@ decisionplot(model, x, class_var = "species") +
 
 ###### Naive Bayes Classifier
 
+model <- x |> e1071::naiveBayes(species ~ ., data = _)
+decisionplot(model, x, class_var = "species", 
+             predict_type = c("class", "raw")) + 
+  labs(title = "Naive Bayes",
+       x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       shape = "Species",
+       fill = "Prediction") 
+
 
 ```

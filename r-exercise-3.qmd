@@ -294,5 +294,14 @@ penguins <- as_tibble(penguins) |>
 x <- penguins |> dplyr::select(bill_length_mm, bill_depth_mm, species)
 x
 
+ggplot(x, aes(x = bill_length_mm, y = bill_depth_mm, fill = species)) +  
+  stat_density_2d(geom = "polygon", aes(alpha = after_stat(level))) +
+  geom_point() +
+  theme_minimal(base_size = 14) +
+  labs(x = "Bill length (mm)",
+       y = "Bill depth (mm)",
+       fill = "Species",
+       alpha = "Density")
+
 
 ```

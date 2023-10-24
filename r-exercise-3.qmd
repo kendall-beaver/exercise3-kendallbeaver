@@ -190,4 +190,14 @@ summary(resamps)
 
 library(lattice)
 bwplot(resamps, layout = c(3, 1))
+
+difs <- diff(resamps)
+difs
+
+summary(difs)
+
+### Applying the Chosen Model to the Test Data ###
+
+pr <- predict(randomForestFit, Zoo_test)
+pr
 ```

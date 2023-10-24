@@ -80,9 +80,8 @@ plot(ctreeFit$finalModel)
 
 ### C 4.5 Decision Tree ###
 ###
-### (I can't get RWeka installed for some reason, after many unsuccessful
-###  attempts; so I'm going to comment it out for now.)
-
+### "J48" is the C4.5 decision tree algorithm to predict the class label of new
+### instances.
 
 C45Fit <- Zoo_train |> train(type ~ .,
   method = "J48",
@@ -94,6 +93,8 @@ C45Fit
 #C45Fit$finalModel
 
 ### K-Nearest Neighbors ###
+###
+### 
 
 knnFit <- Zoo_train |> train(type ~ .,
   method = "knn",

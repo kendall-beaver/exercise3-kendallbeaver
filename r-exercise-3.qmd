@@ -40,7 +40,7 @@ pacman::p_load(
   scales,             # Scale Functions for Visualization
   tidymodels,         # Tidy machine learning framework
   tidyverse,          # Tidy data wrangling and visualization
-  xgboost             # Extreme Gradient Boosting
+  xgboost,             # Extreme Gradient Boosting
   snow
 )
 
@@ -918,9 +918,9 @@ features
 
 ### Using Dummy Variables for Factors ### 
 
-tree_predator <- Zoo_train |> 
-  rpart(predator ~ type, data = _)
-rpart.plot(tree_predator, extra = 2, roundint = FALSE)
+#tree_predator <- Zoo_train |> 
+#  rpart(predator ~ type, data = _)
+#rpart.plot(tree_predator, extra = 2, roundint = FALSE)
 
 Zoo_train_dummy <- as_tibble(class2ind(Zoo_train$type)) |> 
   mutate(across(everything(), as.factor)) |>
@@ -951,7 +951,7 @@ data(Zoo, package="mlbench")
 
 ggplot(Zoo, aes(y = type)) + geom_bar()
 
-Zoo_reptile <- Zoo |> ### Left off here.
+Zoo_reptile <- Zoo |> ###
   mutate(type = factor(Zoo$type == "reptile", 
                        levels = c(FALSE, TRUE),
                        labels = c("nonreptile", "reptile")))
@@ -1017,6 +1017,7 @@ confusionMatrix(data = predict(fit, testing_reptile),
                 ref = testing_reptile$type, positive = "reptile")
 
 
+
 ```
 
 ```{r}
@@ -1050,5 +1051,28 @@ r <- roc(testing_reptile$type == "reptile", prob[,"reptile"])
 
 r
 
+ggroc(r) + geom_abline(intercept = 1, slope = 1, color = "darkgrey")
+
+### Option 4: Use a Cost-Sensitive Classifier ###
+
+cost <- matrix(c(
+  0,   1,
+  100, 0
+), byrow = TRUE, nrow = 2)
+cost
+
+fit <- training_reptile |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        parms = list(loss = cost),
+        trControl = trainControl(method = "cv"))
+
+fit
+
+rpart.plot(fit$finalModel, extra = 2)
+
+confusionMatrix(data = predict(fit, testing_reptile),
+                ref = testing_reptile$type, positive = "reptile")
 
 ```

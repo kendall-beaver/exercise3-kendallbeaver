@@ -883,5 +883,172 @@ f
 m <- Zoo_train |> rpart(f, data = _)
 rpart.plot(m, extra = 2, roundint = FALSE)
 
+Zoo_train |> 
+  gain.ratio(type ~ ., data = _) |>
+  as_tibble(rownames = "feature") |>
+  arrange(desc(attr_importance))
+
+### Feature Subset Selection ###
+
+Zoo_train |> 
+  cfs(type ~ ., data = _)
+
+evaluator <- function(subset) {
+  model <- Zoo_train |> 
+    train(as.simple.formula(subset, "type"),
+          data = _,
+          method = "rpart",
+          trControl = trainControl(method = "boot", number = 5),
+          tuneLength = 0)
+  results <- model$resample$Accuracy
+  cat("Trying features:", paste(subset, collapse = " + "), "\n")
+  m <- mean(results)
+  cat("Accuracy:", round(m, 2), "\n\n")
+  m
+}
+
+features <- Zoo_train |> colnames() |> setdiff("type")
+features
+
+##subset <- backward.search(features, evaluator)
+##subset <- forward.search(features, evaluator)
+##subset <- best.first.search(features, evaluator)
+##subset <- hill.climbing.search(features, evaluator)
+##subset
+
+### Using Dummy Variables for Factors ### 
+
+tree_predator <- Zoo_train |> 
+  rpart(predator ~ type, data = _)
+rpart.plot(tree_predator, extra = 2, roundint = FALSE)
+
+Zoo_train_dummy <- as_tibble(class2ind(Zoo_train$type)) |> 
+  mutate(across(everything(), as.factor)) |>
+  add_column(predator = Zoo_train$predator)
+Zoo_train_dummy
+
+tree_predator <- Zoo_train_dummy |> 
+  rpart(predator ~ ., 
+        data = _,
+        control = rpart.control(minsplit = 2, cp = 0.01))
+rpart.plot(tree_predator, roundint = FALSE)
+
+fit <- Zoo_train |> 
+  train(predator ~ type, 
+        data = _, 
+        method = "rpart",
+        control = rpart.control(minsplit = 2),
+        tuneGrid = data.frame(cp = 0.01))
+fit
+
+rpart.plot(fit$finalModel, extra = 2)
+
+### Class Imbalance ###
+
+library(rpart)
+library(rpart.plot)
+data(Zoo, package="mlbench")
+
+ggplot(Zoo, aes(y = type)) + geom_bar()
+
+Zoo_reptile <- Zoo |> ### Left off here.
+  mutate(type = factor(Zoo$type == "reptile", 
+                       levels = c(FALSE, TRUE),
+                       labels = c("nonreptile", "reptile")))
+
+summary(Zoo_reptile)
+
+ggplot(Zoo_reptile, aes(y = type)) + geom_bar()
+
+set.seed(1234)
+
+inTrain <- createDataPartition(y = Zoo_reptile$type, p = .5, list = FALSE)
+training_reptile <- Zoo_reptile |> slice(inTrain)
+testing_reptile <- Zoo_reptile |> slice(-inTrain)
+
+fit <- training_reptile |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        trControl = trainControl(method = "cv"))
+
+fit
+
+rpart.plot(fit$finalModel, extra = 2)
+
+confusionMatrix(data = predict(fit, testing_reptile),
+                ref = testing_reptile$type, positive = "reptile")
+
+library(sampling)
+set.seed(1000) # for repeatability
+
+id <- strata(training_reptile, stratanames = "type", size = c(50, 50), method = "srswr")
+training_reptile_balanced <- training_reptile |> 
+  slice(id$ID_unit)
+table(training_reptile_balanced$type)
+
+fit <- training_reptile_balanced |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        trControl = trainControl(method = "cv"),
+        control = rpart.control(minsplit = 5))
+
+fit
+
+rpart.plot(fit$finalModel, extra = 2)
+
+confusionMatrix(data = predict(fit, testing_reptile),
+                ref = testing_reptile$type, positive = "reptile")
+
+id <- strata(training_reptile, stratanames = "type", size = c(50, 100), method = "srswr")
+training_reptile_balanced <- training_reptile |> 
+  slice(id$ID_unit)
+table(training_reptile_balanced$type)
+
+fit <- training_reptile_balanced |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        trControl = trainControl(method = "cv"),
+        control = rpart.control(minsplit = 5))
+
+confusionMatrix(data = predict(fit, testing_reptile),
+                ref = testing_reptile$type, positive = "reptile")
+
+
+```
+
+```{r}
+### Option 3: Build A Larger Tree and use Predicted Probabilities ###
+
+fit <- training_reptile |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        tuneLength = 10,
+        trControl = trainControl(method = "cv",
+        classProbs = TRUE,  ## necessary for predict with type="prob"
+        summaryFunction=twoClassSummary),  ## necessary for ROC
+        metric = "ROC",
+        control = rpart.control(minsplit = 3))
+
+fit
+
+rpart.plot(fit$finalModel, extra = 2)
+
+confusionMatrix(data = predict(fit, testing_reptile),
+                ref = testing_reptile$type, positive = "reptile")
+
+prob <- predict(fit, testing_reptile, type = "prob")
+tail(prob)
+
+###### Plot the ROC Curve
+
+library("pROC")
+r <- roc(testing_reptile$type == "reptile", prob[,"reptile"])
+
+r
+
 
 ```

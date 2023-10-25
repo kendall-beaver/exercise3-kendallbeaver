@@ -849,5 +849,39 @@ summary(resamps)
 library(lattice)
 bwplot(resamps, layout = c(3, 1))
 
+difs <- diff(resamps)
+difs
+
+summary(difs)
+
+### Feature Selection and Feature Preparation ###
+
+library(FSelector)
+
+### Univariate Feature Importance Score ###
+
+weights <- Zoo_train |> 
+  chi.squared(type ~ ., data = _) |>
+  as_tibble(rownames = "feature") |>
+  arrange(desc(attr_importance))
+
+weights
+
+ggplot(weights,
+  aes(x = attr_importance, y = reorder(feature, attr_importance))) +
+  geom_bar(stat = "identity") +
+  xlab("Importance score") + 
+  ylab("Feature")
+
+subset <- cutoff.k(weights |> 
+                   column_to_rownames("feature"), 5)
+subset
+
+f <- as.simple.formula(subset, "type")
+f
+
+m <- Zoo_train |> rpart(f, data = _)
+rpart.plot(m, extra = 2, roundint = FALSE)
+
 
 ```

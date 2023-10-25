@@ -1,0 +1,58 @@
+---
+title: "Homework Bird FeederWatch Data"
+format: html
+editor: visual
+---
+
+```{r}
+
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(
+  C50,                # C5.0 Decision Trees and Rule-Based                            # Models
+  caret,              # Classification and Regression Training
+  e1071,              # Misc Functions of the Department of Statistics (e1071), TU Wien
+  keras,              # R Interface to 'Keras'
+  kernlab,            # Kernel-Based Machine Learning Lab
+  lattice,            # Trellis Graphics for R
+  MASS,               # Support Functions and Datasets for Venables and Ripley's MASS
+  mlbench,            # Machine Learning Benchmark Problems
+  nnet,               # Feedforward Neural Networks and Multinomial Log-Linear Models
+  palmerpenguins,     # Palmer Archipelago (Antarctica) Penguin Data
+  party,              # A Laboratory for Recursive Partytioning
+  partykit,           # A Toolkit for Recursive Partytioning
+  randomForest,       # Breiman and Cutler's Random Forests for Classification and Regression
+  FSelector,          # This will bring in "RWeka & also randomForest, et al." 
+  rJava,              # I think this is needed for RWeka so I'll add it here
+  rpart,              # Recursive partitioning models
+  RWeka,              # R/Weka Interface
+  scales,             # Scale Functions for Visualization
+  tidymodels,         # Tidy machine learning framework
+  tidyverse,          # Tidy data wrangling and visualization
+  xgboost,             # Extreme Gradient Boosting
+  snow,
+  dlookr, # Exploratory data analysis
+  forecast, # Needed for Box-Cox transformations
+  formattable, # HTML tables from R outputs
+  here, # Standardizes paths to data
+  kableExtra, # Alternative to formattable
+  knitr, # Needed to write HTML reports
+  missRanger, # To generate NAs
+  tidyverse) # Powerful data wrangling package suite
+
+### Install packages: Show fewer digits ###
+
+options(digits=3)
+
+### Load raw data.
+
+dataset1 <- read_csv(here('PFW_2021_public.csv'))
+dataset1
+
+dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
+dataset2
+
+
+
+```

@@ -934,13 +934,21 @@ tree_predator <- Zoo_train_dummy |>
         control = rpart.control(minsplit = 2, cp = 0.01))
 rpart.plot(tree_predator, roundint = FALSE)
 
-fit <- Zoo_train |> 
-  train(predator ~ type, 
+fit <- Zoo_train |> ### THIS IS CAUSING ISSUES.
+  train (type ~ predator,  #(predator ~ type, ### The "type" seems to be #switched up.
         data = _, 
         method = "rpart",
         control = rpart.control(minsplit = 2),
         tuneGrid = data.frame(cp = 0.01))
 fit
+
+fit <- Zoo_train |>
+  train(type ~ .,
+    data = _ ,
+    method = "rpart",
+    control = rpart.control(minsplit = 2),
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 5)
 
 rpart.plot(fit$finalModel, extra = 2)
 
@@ -965,7 +973,11 @@ set.seed(1234)
 inTrain <- createDataPartition(y = Zoo_reptile$type, p = .5, list = FALSE)
 #Zoo_train <- dplyr::slice(Zoo, inTrain)
 #Zoo_test <- dplyr::slice(Zoo, -inTrain)
+
 training_reptile <- Zoo_reptile |> dplyr::slice(inTrain)
+tibble_TR <- as_tibble(training_reptile)
+tibble_TR |> print(n=52)
+
 testing_reptile <- Zoo_reptile |> dplyr::slice(-inTrain)
 # training_reptile <- Zoo_reptile |> slice(inTrain)
 # testing_reptile <- Zoo_reptile |> slice(-inTrain)
@@ -975,7 +987,7 @@ fit <- training_reptile |>
   train(type ~ .,
         data = _,
         method = "rpart",
-        trControl = trainControl(method = "cv"))
+        trControl = trainControl(method = "cv") # This has an extra right-hand parentheses symbol that may be interfering with this code rendering.
 
 fit
 

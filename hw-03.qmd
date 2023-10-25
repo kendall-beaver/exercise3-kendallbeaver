@@ -52,6 +52,7 @@ dataset1
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 dataset2
+### hab_water_fresh, numfeeders_etc.
 
 
 

@@ -805,5 +805,49 @@ rpart.plot(fit$finalModel, extra = 2,
 
 varImp(fit)
 
+imp <- varImp(fit, compete = FALSE)
+imp
+
+ggplot(imp)
+
+### Testing: Confusion Matrix and Confidence Interval for Accuracy ###
+
+pred <- predict(fit, newdata = Zoo_test) # Now we're brining in TEST DATA.
+pred
+
+confusionMatrix(data = pred, 
+                ref = Zoo_test |> pull(type))
+
+### Model Comparison ###
+
+train_index <- createFolds(Zoo_train$type, k = 10)
+
+rpartFit <- Zoo_train |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        tuneLength = 10,
+        trControl = trainControl(method = "cv", indexOut = train_index)
+  )
+
+knnFit <- Zoo_train |> 
+  train(type ~ .,
+        data = _,
+        method = "knn",
+        preProcess = "scale",
+          tuneLength = 10,
+          trControl = trainControl(method = "cv", indexOut = train_index)
+  )
+
+resamps <- resamples(list(
+        CART = rpartFit,
+        kNearestNeighbors = knnFit
+        ))
+
+summary(resamps)
+
+library(lattice)
+bwplot(resamps, layout = c(3, 1))
+
 
 ```

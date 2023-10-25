@@ -920,7 +920,8 @@ features
 
 tree_predator <- Zoo_train |> 
   rpart(predator ~ type, data = _)
-rpart.plot(tree_predator, extra = 2, roundint = FALSE)
+rpart.plot(tree_predator, roundint = FALSE) #extra = 2, roundint = FALSE)
+# The "extra=2" was preventing the plot from generated so I removed it.
 
 Zoo_train_dummy <- as_tibble(class2ind(Zoo_train$type)) |> 
   mutate(across(everything(), as.factor)) |>

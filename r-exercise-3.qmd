@@ -918,9 +918,9 @@ features
 
 ### Using Dummy Variables for Factors ### 
 
-#tree_predator <- Zoo_train |> 
-#  rpart(predator ~ type, data = _)
-#rpart.plot(tree_predator, extra = 2, roundint = FALSE)
+tree_predator <- Zoo_train |> 
+  rpart(predator ~ type, data = _)
+rpart.plot(tree_predator, extra = 2, roundint = FALSE)
 
 Zoo_train_dummy <- as_tibble(class2ind(Zoo_train$type)) |> 
   mutate(across(everything(), as.factor)) |>
@@ -961,10 +961,14 @@ summary(Zoo_reptile)
 ggplot(Zoo_reptile, aes(y = type)) + geom_bar()
 
 set.seed(1234)
-
 inTrain <- createDataPartition(y = Zoo_reptile$type, p = .5, list = FALSE)
-training_reptile <- Zoo_reptile |> slice(inTrain)
-testing_reptile <- Zoo_reptile |> slice(-inTrain)
+#Zoo_train <- dplyr::slice(Zoo, inTrain)
+#Zoo_test <- dplyr::slice(Zoo, -inTrain)
+training_reptile <- Zoo_reptile |> dplyr::slice(inTrain)
+testing_reptile <- Zoo_reptile |> dplyr::slice(-inTrain)
+# training_reptile <- Zoo_reptile |> slice(inTrain)
+# testing_reptile <- Zoo_reptile |> slice(-inTrain)
+# The above two functions couldn't be created without me adding "dplyr::" in front of the slice function, then I got it to work.
 
 fit <- training_reptile |> 
   train(type ~ .,
@@ -1015,64 +1019,4 @@ fit <- training_reptile_balanced |>
 
 confusionMatrix(data = predict(fit, testing_reptile),
                 ref = testing_reptile$type, positive = "reptile")
-
-
-
-```
-
-```{r}
-### Option 3: Build A Larger Tree and use Predicted Probabilities ###
-
-fit <- training_reptile |> 
-  train(type ~ .,
-        data = _,
-        method = "rpart",
-        tuneLength = 10,
-        trControl = trainControl(method = "cv",
-        classProbs = TRUE,  ## necessary for predict with type="prob"
-        summaryFunction=twoClassSummary),  ## necessary for ROC
-        metric = "ROC",
-        control = rpart.control(minsplit = 3))
-
-fit
-
-rpart.plot(fit$finalModel, extra = 2)
-
-confusionMatrix(data = predict(fit, testing_reptile),
-                ref = testing_reptile$type, positive = "reptile")
-
-prob <- predict(fit, testing_reptile, type = "prob")
-tail(prob)
-
-###### Plot the ROC Curve
-
-library("pROC")
-r <- roc(testing_reptile$type == "reptile", prob[,"reptile"])
-
-r
-
-ggroc(r) + geom_abline(intercept = 1, slope = 1, color = "darkgrey")
-
-### Option 4: Use a Cost-Sensitive Classifier ###
-
-cost <- matrix(c(
-  0,   1,
-  100, 0
-), byrow = TRUE, nrow = 2)
-cost
-
-fit <- training_reptile |> 
-  train(type ~ .,
-        data = _,
-        method = "rpart",
-        parms = list(loss = cost),
-        trControl = trainControl(method = "cv"))
-
-fit
-
-rpart.plot(fit$finalModel, extra = 2)
-
-confusionMatrix(data = predict(fit, testing_reptile),
-                ref = testing_reptile$type, positive = "reptile")
-
 ```

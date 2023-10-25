@@ -44,16 +44,26 @@ pacman::p_load(
 ### Install packages: Show fewer digits ###
 
 options(digits=3)
+```
 
+```{r}
 ### Load raw data.
 
 dataset1 <- read_csv(here('PFW_2021_public.csv'))
-dataset1
+dataset1 |> summary()
+
+dataset1 |>
+  head() |>
+  formattable()
+# Need:
+## species_code
+## 
+```
+
+```{r}
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
-dataset2
+dataset2 |> summary()
+
 ### hab_water_fresh, numfeeders_etc.
-
-
-
 ```

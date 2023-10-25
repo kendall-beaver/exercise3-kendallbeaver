@@ -1,0 +1,297 @@
+---
+title: "test_r-exercise-3-PART-2"
+format: html
+editor: visual
+---
+
+```{r}
+
+########################################################
+#
+#                     Exercise 3 - Part I:
+#
+#       Classification: Basic Concepts and Techniques
+#
+########################################################
+
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, rpart, rpart.plot, caret, 
+  lattice, FSelector, sampling, pROC, mlbench)
+
+### Dataset we'll be working with
+
+data(Zoo, package="mlbench")
+head(Zoo)
+
+library(tidyverse)
+as_tibble(Zoo, rownames = "animal")
+
+Zoo <- Zoo |>
+  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE))) |>
+  mutate(across(where(is.character), factor))
+
+summary(Zoo)
+
+### Decision Trees
+
+library(rpart)
+
+### Create Tree With Default Settings (uses pre-pruning)
+
+tree_default <- Zoo |> 
+  rpart(type ~ ., data = _)
+tree_default
+
+library(rpart.plot)
+rpart.plot(tree_default, extra = 2)
+
+### Create a Full Tree (rpart.plot will create a plot)
+
+tree_full <- Zoo |> 
+  rpart(type ~ . , data = _, 
+        control = rpart.control(minsplit = 2, cp = 0))
+rpart.plot(tree_full, extra = 2, 
+           roundint=FALSE,
+            box.palette = list("Gy", "Gn", "Bu", "Bn", 
+                               "Or", "Rd", "Pu")) # specify 7 colors
+
+tree_full # This will show the tree in terminal format.
+
+predict(tree_default, Zoo) |> head ()
+
+pred <- predict(tree_default, Zoo, type="class")
+head(pred)
+
+confusion_table <- with(Zoo, table(type, pred))
+confusion_table
+
+correct <- confusion_table |> diag() |> sum()
+correct
+
+error <- confusion_table |> sum() - correct
+error
+
+accuracy <- correct / (correct + error)
+accuracy
+
+accuracy <- function(truth, prediction) {
+    tbl <- table(truth, prediction)
+    sum(diag(tbl))/sum(tbl)
+}
+
+accuracy(Zoo |> pull(type), pred)
+
+accuracy(Zoo |> pull(type), 
+         predict(tree_full, Zoo, type = "class"))
+
+library(caret)
+confusionMatrix(data = pred, 
+                reference = Zoo |> pull(type))
+
+### Make Predictions for New Data
+
+###### Make up my own animal: A lion with feathered wings
+
+my_animal <- tibble(hair = TRUE, feathers = TRUE, eggs = FALSE,
+  milk = TRUE, airborne = TRUE, aquatic = FALSE, predator = TRUE,
+  toothed = TRUE, backbone = TRUE, breathes = TRUE, venomous = FALSE,
+  fins = FALSE, legs = 4, tail = TRUE, domestic = FALSE,
+  catsize = FALSE, type = NA)
+
+my_animal <- my_animal |> 
+  mutate(across(where(is.logical), factor, levels = c(TRUE, FALSE)))
+my_animal
+
+predict(tree_default , my_animal, type = "class")
+
+### Model Evaluation with Caret
+
+library(caret)
+
+## Windows backend
+library(doParallel)
+cl <- makeCluster(4, type="SOCK")
+registerDoParallel(cl)
+
+set.seed(2000)
+
+### Hold out Test Data
+
+inTrain <- createDataPartition(y = Zoo$type, p = .8, list = FALSE)
+Zoo_train <- Zoo |> slice(inTrain)
+Zoo_test <- Zoo |> slice(-inTrain)
+
+### Learn a Model and Tune Hyperparameters on the Training Data
+
+fit <- Zoo_train |>
+  train(type ~ .,
+    data = _ ,
+    method = "rpart",
+    control = rpart.control(minsplit = 2),
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 5)
+
+fit
+
+rpart.plot(fit$finalModel, extra = 2,
+  box.palette = list("Gy", "Gn", "Bu", "Bn", "Or", "Rd", "Pu"))
+
+varImp(fit)
+
+imp <- varImp(fit, compete = FALSE)
+imp
+
+ggplot(imp)
+
+### The above code can render. ###
+
+### Testing: Confusion Matrix and Confidence Interval for Accuracy ###
+
+pred <- predict(fit, newdata = Zoo_test) # Now we're brining in TEST DATA.
+pred
+
+confusionMatrix(data = pred, 
+                ref = Zoo_test |> pull(type))
+
+### Model Comparison ###
+
+train_index <- createFolds(Zoo_train$type, k = 10)
+
+rpartFit <- Zoo_train |> 
+  train(type ~ .,
+        data = _,
+        method = "rpart",
+        tuneLength = 10,
+        trControl = trainControl(method = "cv", indexOut = train_index)
+  )
+
+knnFit <- Zoo_train |> 
+  train(type ~ .,
+        data = _,
+        method = "knn",
+        preProcess = "scale",
+          tuneLength = 10,
+          trControl = trainControl(method = "cv", indexOut = train_index)
+  )
+
+resamps <- resamples(list(
+        CART = rpartFit,
+        kNearestNeighbors = knnFit
+        ))
+
+summary(resamps)
+
+library(lattice)
+bwplot(resamps, layout = c(3, 1))
+
+difs <- diff(resamps)
+difs
+
+summary(difs)
+
+### Feature Selection and Feature Preparation ###
+
+library(FSelector)
+
+### The above code can render: Test 2. ###
+
+### Univariate Feature Importance Score ###
+
+weights <- Zoo_train |> 
+  chi.squared(type ~ ., data = _) |>
+  as_tibble(rownames = "feature") |>
+  arrange(desc(attr_importance))
+
+weights
+
+ggplot(weights,
+  aes(x = attr_importance, y = reorder(feature, attr_importance))) +
+  geom_bar(stat = "identity") +
+  xlab("Importance score") + 
+  ylab("Feature")
+
+subset <- cutoff.k(weights |> 
+                   column_to_rownames("feature"), 5)
+subset
+
+f <- as.simple.formula(subset, "type")
+f
+
+m <- Zoo_train |> rpart(f, data = _)
+rpart.plot(m, extra = 2, roundint = FALSE)
+
+Zoo_train |> 
+  gain.ratio(type ~ ., data = _) |>
+  as_tibble(rownames = "feature") |>
+  arrange(desc(attr_importance))
+
+### Feature Subset Selection ###
+
+Zoo_train |> 
+  cfs(type ~ ., data = _)
+
+evaluator <- function(subset) {
+  model <- Zoo_train |> 
+    train(as.simple.formula(subset, "type"),
+          data = _,
+          method = "rpart",
+          trControl = trainControl(method = "boot", number = 5),
+          tuneLength = 0)
+  results <- model$resample$Accuracy
+  cat("Trying features:", paste(subset, collapse = " + "), "\n")
+  m <- mean(results)
+  cat("Accuracy:", round(m, 2), "\n\n")
+  m
+}
+
+features <- Zoo_train |> colnames() |> setdiff("type")
+features
+
+##subset <- backward.search(features, evaluator)
+##subset <- forward.search(features, evaluator)
+##subset <- best.first.search(features, evaluator)
+##subset <- hill.climbing.search(features, evaluator)
+##subset
+
+### The above can render: Test 3. ###
+
+### Using Dummy Variables for Factors ### 
+
+tree_predator <- Zoo_train |> 
+  rpart(predator ~ type, data = _)
+rpart.plot(tree_predator, roundint = FALSE) #extra = 2, roundint = FALSE)
+# The "extra=2" was preventing the plot from generated so I removed it.
+
+Zoo_train_dummy <- as_tibble(class2ind(Zoo_train$type)) |> 
+  mutate(across(everything(), as.factor)) |>
+  add_column(predator = Zoo_train$predator)
+Zoo_train_dummy
+
+tree_predator <- Zoo_train_dummy |> 
+  rpart(predator ~ ., 
+        data = _,
+        control = rpart.control(minsplit = 2, cp = 0.01))
+rpart.plot(tree_predator, roundint = FALSE)
+
+fit <- Zoo_train |> ### THIS IS CAUSING ISSUES.
+  train (type ~ predator,  #(predator ~ type, ### The "type" seems to be #switched up.
+        data = _, 
+        method = "rpart",
+        control = rpart.control(minsplit = 2),
+        tuneGrid = data.frame(cp = 0.01))
+fit
+
+fit <- Zoo_train |>
+  train(type ~ .,
+    data = _ ,
+    method = "rpart",
+    control = rpart.control(minsplit = 2),
+    trControl = trainControl(method = "cv", number = 10),
+    tuneLength = 5)
+
+rpart.plot(fit$finalModel, extra = 2)
+
+
+```

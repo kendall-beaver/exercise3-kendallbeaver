@@ -987,8 +987,7 @@ fit <- training_reptile |>
   train(type ~ .,
         data = _,
         method = "rpart",
-        trControl = trainControl(method = "cv") # This has an extra right-hand parentheses symbol that may be interfering with this code rendering.
-
+        trControl = trainControl(method = "cv"), number = 10)
 fit
 
 rpart.plot(fit$finalModel, extra = 2)
@@ -1001,7 +1000,7 @@ set.seed(1000) # for repeatability
 
 id <- strata(training_reptile, stratanames = "type", size = c(50, 50), method = "srswr")
 training_reptile_balanced <- training_reptile |> 
-  slice(id$ID_unit)
+  dplyr::slice(id$ID_unit)
 table(training_reptile_balanced$type)
 
 fit <- training_reptile_balanced |> 
@@ -1020,7 +1019,7 @@ confusionMatrix(data = predict(fit, testing_reptile),
 
 id <- strata(training_reptile, stratanames = "type", size = c(50, 100), method = "srswr")
 training_reptile_balanced <- training_reptile |> 
-  slice(id$ID_unit)
+  dplyr::slice(id$ID_unit)
 table(training_reptile_balanced$type)
 
 fit <- training_reptile_balanced |> 

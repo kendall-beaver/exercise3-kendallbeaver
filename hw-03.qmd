@@ -157,6 +157,8 @@ dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 dataset2 |>
   head() |>
   formattable()
+dataset2
+
 
 dataset2 |> summary()
 
@@ -173,10 +175,14 @@ dataset2 |> # Don't like this plot.
 dataset2 |>
   diagnose_category() |>
   formattable()
-
-### hab_water_fresh, numfeeders_etc.
 ```
 
-Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.
+*Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*
 
-Could the birds that were observed live in these lands that have been observed for the past 2 decades?
+*Could the birds that were observed live in these lands that have been observed for the past 2 decades?*
+
+**Determining which outliers are natural and what is worth imputing from the Grades "Bad, Not Bad, and OK".**
+
+```{r}
+
+```

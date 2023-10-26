@@ -85,6 +85,8 @@ dataset1 |>
 
 Dataset 1 - Observations of 10 species of birds were taken from 9 states in the US (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 state in Canada (Ontario).
 
+I could combine the data based on vegetation that's observed in Dataset 2 with the longitude and latitude. So given a bird species which area/state would you most likely find it in?
+
 ```{r}
 
 # All 62 columns in the dataset:

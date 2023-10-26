@@ -74,7 +74,9 @@ dataset1 <- dataset1 |>
 ##dataset.no_NAs_1 <- dataset1 |> 
   drop_na()
 
-
+dataset1 |>
+  diagnose_category() |>
+  formattable()
 
 # Plot showing the results of our imputation
 #rpart_na_imp_insulin |>
@@ -83,6 +85,10 @@ dataset1 <- dataset1 |>
 # Need these columns from the data:
 # 
 ```
+
+There are 9 US states (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 CA state (Ontario).
+
+10 species
 
 ```{r}
 
@@ -105,6 +111,76 @@ dataset2 |> # I like this plot.
 
 dataset2 |> # Don't like this plot.
   plot_na_intersect(only_na = TRUE)
+
+dataset2 |>
+  diagnose_category() |>
+  formattable()
+
+data_2021 <- dataset2 %>%
+  filter(proj_period_id %in% c("PFW_2021")) %>%
+  select(loc_id,
+         proj_period_id,	
+         yard_type_pavement,
+         yard_type_garden,
+         yard_type_landsca,
+         yard_type_woods,
+         yard_type_desert,
+         hab_dcid_woods,
+         hab_evgr_woods,
+         hab_mixed_woods,
+         hab_orchard,
+         hab_park,
+         hab_water_fresh,
+         hab_water_salt,
+         hab_residential,
+         hab_industrial,
+         hab_agricultural,
+         hab_desert_scrub,
+         hab_young_woods,
+         hab_swamp,
+         hab_marsh,
+         evgr_trees_atleast,
+         evgr_shrbs_atleast,
+         dcid_trees_atleast,	
+         dcid_shrbs_atleast,
+         fru_trees_atleast,
+         cacti_atleast,
+         brsh_piles_atleast,
+         water_srcs_atleast,
+         bird_baths_atleast,
+         nearby_feeders,
+         squirrels,
+         cats,
+         dogs,
+         humans,
+         housing_density,
+         fed_yr_round,
+         fed_in_jan,
+         fed_in_feb,
+         fed_in_mar,
+         fed_in_apr,	
+         fed_in_may,
+         fed_in_jun,
+         fed_in_jul,
+         fed_in_aug,
+         fed_in_sep,
+         fed_in_oct,
+         fed_in_nov,
+         fed_in_dec,
+         numfeeders_suet,
+         numfeeders_ground,
+         numfeeders_hanging,
+         numfeeders_platfrm,
+         numfeeders_humming,
+         numfeeders_water,
+         numfeeders_thistle,
+         numfeeders_fruit,
+         numfeeders_hopper,
+         numfeeders_tube,
+         numfeeders_other,
+         population_atleast,
+         count_area_size_sq_m_atleast)
+data_2021
 
 ### hab_water_fresh, numfeeders_etc.
 ```

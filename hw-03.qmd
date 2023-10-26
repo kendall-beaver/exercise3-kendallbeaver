@@ -199,7 +199,7 @@ fed_yr_round_data <- dataset2 %>%
   diagnose_category() |>
     formattable()
 
-fed_yr_round_data
+#fed_yr_round_data
 ```
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*
@@ -210,3 +210,7 @@ fed_yr_round_data
 
 
 ```
+
+See how much feeding has been done throughout the months over the years.
+
+Think about amount of trees, predators (who will compete for food), etc.

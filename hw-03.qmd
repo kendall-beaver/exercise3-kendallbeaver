@@ -50,20 +50,61 @@ options(digits=3)
 ### Load raw data.
 
 dataset1 <- read_csv(here('PFW_2021_public.csv'))
-dataset1 |> summary()
 
 dataset1 |>
-  head() |>
+  #head() |>
+  diagnose() |> # 361 birds (species_code)
   formattable()
-# Need:
-## species_code
-## 
+
+dataset1
+
+dataset1 |> summary()
+
+dataset1 |> # Table of my N/A values: snow_dep_atleast, entry_technique, effort_hrs_atleast	
+  plot_na_pareto(only_na = TRUE, plot = FALSE) |>
+  formattable() # Publishable table
+
+dataset1 |> # I like this plot.
+  plot_na_pareto(only_na = TRUE)
+
+dataset1 |> # Don't like this plot.
+  plot_na_intersect(only_na = TRUE)
+
+dataset1 <- dataset1 |>
+##dataset.no_NAs_1 <- dataset1 |> 
+  drop_na()
+
+
+
+# Plot showing the results of our imputation
+#rpart_na_imp_insulin |>
+#  plot()
+
+# Need these columns from the data:
+# 
 ```
 
 ```{r}
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
+
+dataset2 |>
+  head() |>
+  formattable()
+
+dataset2
+
 dataset2 |> summary()
+
+dataset2 |> # Table of my N/A values.
+  plot_na_pareto(only_na = TRUE, plot = FALSE) |>
+  formattable() # Publishable table
+
+dataset2 |> # I like this plot.
+  plot_na_pareto(only_na = TRUE)
+
+dataset2 |> # Don't like this plot.
+  plot_na_intersect(only_na = TRUE)
 
 ### hab_water_fresh, numfeeders_etc.
 ```

@@ -161,7 +161,6 @@ dataset2 |>
   formattable()
 dataset2
 
-
 dataset2 |> summary()
 
 dataset2 |> # Table of N/A values.
@@ -177,6 +176,30 @@ dataset2 |> # Don't like this plot.
 dataset2 |>
   diagnose_category() |>
   formattable()
+
+fed_yr_round_data <- dataset2 %>%
+  select(loc_id,
+         proj_period_id,
+         fed_in_apr,
+         fed_in_aug,
+         fed_in_dec,
+         fed_in_feb,
+         fed_in_jan,
+         fed_in_jul,
+         fed_in_jun,
+         fed_in_mar,
+         fed_in_may,
+         fed_in_nov,
+         fed_in_oct,
+         fed_in_sep) #|>
+    #diagnose_category() |>
+  #formattable()
+
+fed_yr_round_data <- dataset2 %>%
+  diagnose_category() |>
+    formattable()
+
+fed_yr_round_data
 ```
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*

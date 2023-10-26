@@ -179,10 +179,9 @@ dataset2 |>
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*
 
-*Could the birds that were observed live in these lands that have been observed for the past 2 decades?*
-
-**Determining which outliers are natural and what is worth imputing from the Grades "Bad, Not Bad, and OK".**
+*Once I narrow down the data to reliable data, then we can ask, "Can the birds that were observed in Dataset 1 live in the lands listed in Dataset 2?"*
 
 ```{r}
+
 
 ```

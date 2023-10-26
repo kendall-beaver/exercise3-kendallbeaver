@@ -60,7 +60,7 @@ dataset1
 
 dataset1 |> summary()
 
-dataset1 |> # Table of my N/A values: snow_dep_atleast, entry_technique, effort_hrs_atleast	
+dataset1 |> # Table of N/A values. Only 3 which I have since removed: snow_dep_atleast, entry_technique, effort_hrs_atleast	
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # Publishable table
 
@@ -81,16 +81,76 @@ dataset1 |>
 # Plot showing the results of our imputation
 #rpart_na_imp_insulin |>
 #  plot()
-
-# Need these columns from the data:
-# 
 ```
 
-There are 9 US states (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 CA state (Ontario).
-
-10 species
+Dataset 1 - Observations of 10 species of birds were taken from 9 states in the US (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 state in Canada (Ontario).
 
 ```{r}
+
+# All 62 columns in the dataset:
+#
+#         loc_id,
+#         proj_period_id,	
+#         yard_type_pavement,
+#         yard_type_garden,
+#         yard_type_landsca,
+#         yard_type_woods,
+#         yard_type_desert,
+#         hab_dcid_woods,
+#         hab_evgr_woods,
+#         hab_mixed_woods,
+#         hab_orchard,
+#         hab_park,
+#         hab_water_fresh,
+#         hab_water_salt,
+#         hab_residential,
+#         hab_industrial,
+#         hab_agricultural,
+#         hab_desert_scrub,
+#         hab_young_woods,
+#         hab_swamp,
+#         hab_marsh,
+#         evgr_trees_atleast,
+#         evgr_shrbs_atleast,
+#         dcid_trees_atleast,	
+#         dcid_shrbs_atleast,
+#         fru_trees_atleast,
+#         cacti_atleast,
+#         brsh_piles_atleast,
+#         water_srcs_atleast,
+#         bird_baths_atleast,
+#         nearby_feeders,
+#         squirrels,
+#         cats,
+#         dogs,
+#         humans,
+#         housing_density,
+#         fed_yr_round,
+#         fed_in_jan,
+#         fed_in_feb,
+#         fed_in_mar,
+#         fed_in_apr,	
+#         fed_in_may,
+#         fed_in_jun,
+#         fed_in_jul,
+#         fed_in_aug,
+#         fed_in_sep,
+#         fed_in_oct,
+#         fed_in_nov,
+#         fed_in_dec,
+#         numfeeders_suet,
+#         numfeeders_ground,
+#         numfeeders_hanging,
+#         numfeeders_platfrm,
+#         numfeeders_humming,
+#         numfeeders_water,
+#         numfeeders_thistle,
+#         numfeeders_fruit,
+#         numfeeders_hopper,
+#         numfeeders_tube,
+#         numfeeders_other,
+#         population_atleast,
+#         count_area_size_sq_m_atleast)
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 
@@ -98,13 +158,11 @@ dataset2 |>
   head() |>
   formattable()
 
-dataset2
-
 dataset2 |> summary()
 
-dataset2 |> # Table of my N/A values.
+dataset2 |> # Table of N/A values.
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
-  formattable() # Publishable table
+  formattable() # |> 
 
 dataset2 |> # I like this plot.
   plot_na_pareto(only_na = TRUE)
@@ -116,71 +174,9 @@ dataset2 |>
   diagnose_category() |>
   formattable()
 
-data_2021 <- dataset2 %>%
-  filter(proj_period_id %in% c("PFW_2021")) %>%
-  select(loc_id,
-         proj_period_id,	
-         yard_type_pavement,
-         yard_type_garden,
-         yard_type_landsca,
-         yard_type_woods,
-         yard_type_desert,
-         hab_dcid_woods,
-         hab_evgr_woods,
-         hab_mixed_woods,
-         hab_orchard,
-         hab_park,
-         hab_water_fresh,
-         hab_water_salt,
-         hab_residential,
-         hab_industrial,
-         hab_agricultural,
-         hab_desert_scrub,
-         hab_young_woods,
-         hab_swamp,
-         hab_marsh,
-         evgr_trees_atleast,
-         evgr_shrbs_atleast,
-         dcid_trees_atleast,	
-         dcid_shrbs_atleast,
-         fru_trees_atleast,
-         cacti_atleast,
-         brsh_piles_atleast,
-         water_srcs_atleast,
-         bird_baths_atleast,
-         nearby_feeders,
-         squirrels,
-         cats,
-         dogs,
-         humans,
-         housing_density,
-         fed_yr_round,
-         fed_in_jan,
-         fed_in_feb,
-         fed_in_mar,
-         fed_in_apr,	
-         fed_in_may,
-         fed_in_jun,
-         fed_in_jul,
-         fed_in_aug,
-         fed_in_sep,
-         fed_in_oct,
-         fed_in_nov,
-         fed_in_dec,
-         numfeeders_suet,
-         numfeeders_ground,
-         numfeeders_hanging,
-         numfeeders_platfrm,
-         numfeeders_humming,
-         numfeeders_water,
-         numfeeders_thistle,
-         numfeeders_fruit,
-         numfeeders_hopper,
-         numfeeders_tube,
-         numfeeders_other,
-         population_atleast,
-         count_area_size_sq_m_atleast)
-data_2021
-
 ### hab_water_fresh, numfeeders_etc.
 ```
+
+Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.
+
+Could the birds that were observed live in these lands that have been observed for the past 2 decades?

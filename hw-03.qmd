@@ -200,6 +200,18 @@ fed_yr_round_data <- dataset2 %>%
     formattable()
 
 #fed_yr_round_data
+
+fed_data_all_months <- data.frame(dataset2) |>
+  group_by(proj_period_id, fed_in_apr, fed_in_may, fed_in_jun, fed_in_aug, fed_in_dec, fed_in_feb, fed_in_jan, fed_in_jul, fed_in_mar, fed_in_nov, fed_in_oct, fed_in_sep) |>
+    summarise.groups(count = n())
+fed_data_all_months
+
+fed_in_apr_data <- dataset2|>
+  group_by("fed_in_apr", "fed_in_may") |>
+    summarise(count = n())
+
+fed_in_apr_data
+
 ```
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*

@@ -156,14 +156,35 @@ I could combine the data based on vegetation that's observed in Dataset 2 with t
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 
+dataset2 <- as.data.frame(dataset2)
+dataset2 |> glimpse()
+
 dataset2 |>
   head() |>
   formattable()
 dataset2
 
+tree_default <- dataset2 |> # Need to remove N/A columns.
+    rpart(type ~ ., data = _)
+tree_default
+
+fit <- rpart(dataset2)
+na.rpart(fit)
+
+
+# fed_data_all_months <- data.frame(dataset2) |>
+
+#dataset2 %>%
+#  select(fed_in_apr) #|>
+#  ifelse(data == 1, TRUE, FALSE)
+
+dataset2 <- dataset2 |> # If converting binary data to T/F, use this.
+  mutate(across(where(is.numeric), factor, levels = c(TRUE, FALSE))) |>
+  mutate(across(where(is.character), factor))
+
 dataset2 |> summary()
 
-dataset2 |> # Table of N/A values.
+dataset2 |> # Table of N/A values. But I only have 0 & 1's.
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # |> 
 

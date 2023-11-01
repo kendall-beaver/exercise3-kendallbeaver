@@ -46,6 +46,8 @@ pacman::p_load(
 options(digits=3)
 ```
 
+**Dataset 1**
+
 ```{r}
 ### Load raw data.
 
@@ -156,7 +158,7 @@ I could combine the data based on vegetation that's observed in Dataset 2 with t
 
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 
-dataset2 <- as.data.frame(dataset2)
+dataset2 <- as_tibble(dataset2)
 dataset2 |> glimpse()
 
 dataset2 |>
@@ -164,12 +166,12 @@ dataset2 |>
   formattable()
 dataset2
 
-tree_default <- dataset2 |> # Need to remove N/A columns.
-    rpart(type ~ ., data = _)
-tree_default
+###tree_default <- dataset2 |> # Need to remove N/A columns.
+###    rpart(type ~ ., data = _)
+###tree_default
 
-fit <- rpart(dataset2)
-na.rpart(fit)
+###fit <- rpart(dataset2)
+###na.rpart(fit)
 
 
 # fed_data_all_months <- data.frame(dataset2) |>
@@ -188,7 +190,7 @@ dataset2 |> # Table of N/A values. But I only have 0 & 1's.
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # |> 
 
-dataset2 |> # I like this plot.
+dataset2 |> # This will guide you what NA values to remove!!!
   plot_na_pareto(only_na = TRUE)
 
 dataset2 |> # Don't like this plot.
@@ -219,8 +221,22 @@ fed_yr_round_data <- dataset2 %>%
 fed_yr_round_data <- dataset2 %>%
   diagnose_category() |>
     formattable()
+fed_yr_round_data
 
-#fed_yr_round_data
+fit <- rpart(fed_yr_round_data) #This WILL produce a decision tree.
+fit
+
+tree_default <- fed_yr_round_data |> 
+  rpart(type ~ ., data = _)
+tree_default
+
+tree_full <- fit |> 
+  rpart(type ~ . , data = _, 
+        control = rpart.control(minsplit = 2, cp = 0))
+rpart.plot(tree_full, extra = 2, 
+           roundint=FALSE,
+            box.palette = list("Gy", "Gn", "Bu", "Bn", 
+                               "Or", "Rd", "Pu")) # specify 7 colors
 
 fed_data_all_months <- data.frame(dataset2) |>
   group_by(proj_period_id, fed_in_apr, fed_in_may, fed_in_jun, fed_in_aug, fed_in_dec, fed_in_feb, fed_in_jan, fed_in_jul, fed_in_mar, fed_in_nov, fed_in_oct, fed_in_sep) |>
@@ -241,6 +257,32 @@ fed_in_apr_data
 
 ```{r}
 
+dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
+
+dataset2 <- as_tibble(dataset2)
+dataset2 |> glimpse()
+
+summary(dataset2)
+
+fed_yr_round_data <- dataset2 %>%
+  select(#fed_in_apr,
+         fed_in_aug,
+         fed_in_dec,
+         fed_in_feb,
+         fed_in_jan,
+         fed_in_jul,
+         fed_in_jun,
+         fed_in_mar,
+         fed_in_may,
+         fed_in_nov,
+         fed_in_oct,
+         fed_in_sep)
+
+fit <- rpart(fed_yr_round_data)
+fit
+
+library(rpart.plot)
+rpart.plot(fit, extra = 2)
 
 ```
 

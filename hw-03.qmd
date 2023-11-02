@@ -192,7 +192,7 @@ dataset2
 # Data type is already factor, so no need to use this.
 ```
 
-This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data.
+This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data. A ratio of missing values below 20%.
 
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
@@ -200,8 +200,13 @@ missing_grades_data <- dataset2 |> # This is the table that guides you on what v
   formattable()
 missing_grades_data
 
-notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK", "Good")) #This will keep the good variables where, relatively speaking, a minimium of NAs are quite low. Now I want to see if the decision tree algorithm will remove the NAs and plot the data. 
+notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK", "Good")) 
+#This will keep the good variables where, relatively speaking, a minimium of NAs are quite low. Now I want to see if the decision tree algorithm will remove the NAs and plot the data. 
 notbad_and_ok_data
+#notbad_and_ok_data |>
+#  drop_na()
+
+
 ```
 
 This is the graph of all missing values, which the "only_na = FALSE" shows the relationship of two density curves, which "only_na = TRUE" has all data colored in red, indicating that all data should be removed.
@@ -213,9 +218,6 @@ dataset2 |> # This is just the above, but "plot" isn't "FALSE".
 ```
 
 ```{r}
-
-dataset2 |> # Don't like this plot.
-  plot_na_intersect(only_na = TRUE)
 
 dataset2 |>
   diagnose_category() |>

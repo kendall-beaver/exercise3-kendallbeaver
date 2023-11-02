@@ -180,18 +180,28 @@ dataset2
 #  select(fed_in_apr) #|>
 #  ifelse(data == 1, TRUE, FALSE)
 
-dataset2 <- dataset2 |> # If converting binary data to T/F, use this.
-  mutate(across(where(is.numeric), factor, levels = c(TRUE, FALSE))) |>
-  mutate(across(where(is.character), factor))
+#dataset2 <- dataset2 |> # If converting binary data to T/F, use this.
+#  mutate(across(where(is.numeric), factor, levels = c(TRUE, FALSE))) |>
+#  mutate(across(where(is.character), factor))
+# Data type is already factor, so no need to use this.
 
 dataset2 |> summary()
+```
 
-dataset2 |> # Table of N/A values. But I only have 0 & 1's.
+```{r}
+notbad_ok_data <- dataset2 |> # This is the table that guides you on what values to remove.
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
-  formattable() # |> 
+  formattable()
+notbad_ok_data
+```
 
-dataset2 |> # This will guide you what NA values to remove!!!
+```{r}
+
+dataset2 |> # This is the plot that will guide you on what to remove.
   plot_na_pareto(only_na = TRUE)
+```
+
+```{r}
 
 dataset2 |> # Don't like this plot.
   plot_na_intersect(only_na = TRUE)
@@ -248,7 +258,6 @@ fed_in_apr_data <- dataset2|>
     summarise(count = n())
 
 fed_in_apr_data
-
 ```
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*

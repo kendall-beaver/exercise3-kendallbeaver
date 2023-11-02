@@ -4,6 +4,24 @@ format: html
 editor: visual
 ---
 
+[**Overall Analysis of My Bird Feeder Watch Classification Project:**]{.underline}
+
+Since there are 2 different data sets where data set1 ("D1") captures data from 2020-2021 of birds witnessed over a 2 day period. Data set2 ("D2") contains data that captures the amount of bird feeders available in an area, and sometimes the landscape such as the amount of trees, other animals witnessed, etc., but does not list any types of birds witnessed.
+
+Both D1 & D2 list location IDs but the ID alpha-numeric characters do not match up in any way. D1 gives additional information about the longitude and latitude location of where the data was captured, which includes states in the upper NE of the US and as well as in Canada, but the D2 does not give any information at all about where the data was captured, therefore I can't link both of these data sets.
+
+D1 contained no missing values, which makes sense given the short time frame to capture data, compared to 20 years of data captured in D2 which was full of hundreds of thousands of missing data points. I cleaned up D2 by using the "plot_na_pareto" function to find the top 20% that was missing the least amount of data (the function displayed grades of "NotBad", "OK," "Good"), and then I simply removed the rows of data missing values.
+
+Cleaning D2 didn't do much because both "tables" still couldn't be linked in any meaningful way, so I decided to focus my project and analysis on finding what areas offered the most amount of food and will try to link those to the most amount of birds that were witnessed in D1, as a sort of recommended area for the survival of the masses.
+
+It is hard to try to plot any meaningful relationships between these two opposing data sets, D1 & D2, but I will try to include produce something meaningful and include in my Appendix below.
+
+But in summary, it is very difficult to make a decision on where birds should go to if they want to survive based on this limited data and tables I was given. The advantage that birds have over animals that cannot fly is that they can go anywhere (and do go anywhere) to find food in order to survive, and a human can only simply predict that the location with the most amount of food and shelter available and with less predators in the area, the greater chance that we'll observe birds in these favorable locations. And having a bird bath in these locations doesn't necessarily ensure their survival, but it's good to have good hygiene when you're traveling across the world.
+
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
+
+**Background packages installed to run my analysis:**
+
 ```{r}
 
 if(!require(pacman))
@@ -61,8 +79,10 @@ dataset1 |>
   #head() |>
   diagnose() |> # 361 birds (species_code)
   formattable()
-
 dataset1
+
+library(writexl)
+write_xlsx(dataset1, path = "dataset1_original.xlsx")
 
 dataset1 |> summary()
 
@@ -147,7 +167,7 @@ This is just a basic overview of D2.
 #         fed_in_oct,
 #         fed_in_nov,
 #         fed_in_dec,
-#         numfeeders_suet,
+#         numfeeders_suet, (Suet bird feeders are a type of bird feeder that holds suet, a high-energy food source for birds which is especially important during winter when birds need extra energy to stay warm.)
 #         numfeeders_ground,
 #         numfeeders_hanging,
 #         numfeeders_platfrm,
@@ -192,7 +212,8 @@ dataset2
 # Data type is already factor, so no need to use this.
 ```
 
-This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data. A ratio of missing values below 20%.
+This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data. A ratio of missing values below 20%.\
+-There are 4 types of bird feeders contained in this data.
 
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
@@ -237,6 +258,10 @@ clean_dataset2 #254,355 rows x 22 columns
 
 no_na_values_dataset2 <- na.omit(clean_dataset2)
 no_na_values_dataset2 #121,918 x 22 columns
+no_na_values_dataset2 |> summary()
+
+library(writexl)
+write_xlsx(no_na_values_dataset2, path = "dataset2_clean.xlsx")
 
 tree_default <- no_na_values_dataset2 |> 
   rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?

@@ -269,6 +269,17 @@ write_xlsx(no_na_values_dataset2, path = "dataset2_clean.xlsx")
 
 birdfeeder_count <- c(0:14, 16, 22)
 birdfeeder_count
+no_of_birdfeeder_elements <- length(birdfeeder_count)
+no_of_birdfeeder_elements # There's 17 elements that need to be divided by 3...
+
+breaks <- quantile(birdfeeder_count, probs = c(0, 1/3, 2/3, 1))
+breaks |> summary()
+categories <- cut(birdfeeder_count, breaks, include.lowest = TRUE, labels = c("Category 1", "Category 2", "Category 3"))
+categories
+
+# Print the categories
+print(categories)
+
 
 #tree_default <- no_na_values_dataset2 |> 
 #  rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?

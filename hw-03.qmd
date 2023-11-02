@@ -46,9 +46,11 @@ pacman::p_load(
 options(digits=3)
 ```
 
-**Dataset 1**
+**Dataset 1 (**This dataset has no missing values.)
 
-This dataset has no missing values.
+[Thoughts on using this data to make a decision tree:]{.underline}
+
+Observations of 10 species of birds were taken from 9 states in the US (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 state in Canada (Ontario)... I could combine the data based on vegetation that's observed in Dataset 2 with the longitude and latitude. So given a bird species which area/state would you most likely find it in?
 
 ```{r}
 ### Load raw data.
@@ -68,15 +70,15 @@ dataset1 |> # Table of N/A values. Only 3 which I have since removed: snow_dep_a
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # Publishable table
 
-dataset1 |> # The list of "missing grades" of NA values. 
-  plot_na_pareto(only_na = TRUE, plot = FALSE) # But data has no missing values so this isn't needed.
+#dataset1 |> # The list of "missing grades" of NA values. 
+  #plot_na_pareto(only_na = TRUE, plot = FALSE) # But data has no missing values so this isn't needed.
 
-dataset1 |> # The plot of "missing grades". But the data has no missing values.
-  plot_na_intersect(only_na = TRUE)
+#dataset1 |> # The plot of "missing grades". But the data has no missing values so this isn't needed either.
+  #plot_na_intersect(only_na = TRUE)
 
 dataset1 <- dataset1 |>
 ##dataset.no_NAs_1 <- dataset1 |> 
-  drop_na()
+  drop_na() # This is part of the alternative classification techniques.
 
 dataset1 |>
   diagnose_category() |>
@@ -87,13 +89,10 @@ dataset1 |>
 #  plot()
 ```
 
-Dataset 1 - Observations of 10 species of birds were taken from 9 states in the US (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 state in Canada (Ontario).
-
-I could combine the data based on vegetation that's observed in Dataset 2 with the longitude and latitude. So given a bird species which area/state would you most likely find it in?
-
 **Dataset 2:**
 
-This has 62 columns of data that has a lot of missing/NA values.
+This has 62 columns of data that has a lot of missing/NA values.\
+This is just a basic overview of D2.
 
 ```{r}
 
@@ -193,6 +192,8 @@ dataset2
 # Data type is already factor, so no need to use this.
 ```
 
+This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data.
+
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
   plot_na_pareto(only_na = FALSE, plot = FALSE) |>
@@ -203,10 +204,12 @@ notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK", "
 notbad_and_ok_data
 ```
 
+This is the graph of all missing values, which the "only_na = FALSE" shows the relationship of two density curves, which "only_na = TRUE" has all data colored in red, indicating that all data should be removed.
+
 ```{r}
 
 dataset2 |> # This is just the above, but "plot" isn't "FALSE".
-  plot_na_pareto(only_na = TRUE)
+  plot_na_pareto(only_na = FALSE)
 ```
 
 ```{r}

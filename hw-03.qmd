@@ -203,10 +203,47 @@ missing_grades_data
 notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK", "Good")) 
 #This will keep the good variables where, relatively speaking, a minimium of NAs are quite low. Now I want to see if the decision tree algorithm will remove the NAs and plot the data. 
 notbad_and_ok_data
-#notbad_and_ok_data |>
-#  drop_na()
 
+#I need to extract these columns then filter the dataset2 for these columns and then clean up the missing values...?
 
+columns_to_export <- c("variable")  #, "ratio", "grade")
+write.table(notbad_and_ok_data[, columns_to_export], file = "output.txt", sep = "\t", row.names = FALSE)
+
+columns_to_extract <- c("hab_dcid_woods",
+"brsh_piles_atleast",
+"hab_water_fresh",
+"numfeeders_platfrm",
+"hab_mixed_woods",
+"numfeeders_ground",
+"hab_residential",
+"dogs",
+"cats",
+"evgr_shrbs_atleast",
+"dcid_shrbs_atleast",
+"nearby_feeders",
+"population_atleast",
+"evgr_trees_atleast",
+"dcid_trees_atleast",
+"humans",
+"count_area_size_sq_m_atleast",
+"housing_density",
+"numfeeders_suet",
+"squirrels",
+"loc_id",
+"proj_period_id")
+
+clean_dataset2 <- dataset2[, columns_to_extract]
+clean_dataset2
+
+no_na_values_dataset2 <- na.omit(notbad_and_ok_data)
+no_na_values_dataset2
+
+tree_default <- no_na_values_dataset2 |> 
+  rpart(type ~ ., data = _)
+tree_default
+
+fit <- rpart(notbad_and_ok_data) #The decision tree
+fit
 ```
 
 This is the graph of all missing values, which the "only_na = FALSE" shows the relationship of two density curves, which "only_na = TRUE" has all data colored in red, indicating that all data should be removed.

@@ -263,9 +263,9 @@ no_na_values_dataset2 |> summary()
 library(writexl)
 write_xlsx(no_na_values_dataset2, path = "dataset2_clean.xlsx")
 
-tree_default <- no_na_values_dataset2 |> 
-  rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?
-tree_default
+#tree_default <- no_na_values_dataset2 |> 
+#  rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?
+#tree_default
 
 fit <- rpart(notbad_and_ok_data) #A simple decision tree where I'm not actually controlling the input and output...?
 fit
@@ -281,94 +281,63 @@ dataset2 |> # This is just the above, but "plot" isn't "FALSE".
 
 ```{r}
 
-dataset2 |>
-  diagnose_category() |>
-  formattable()
+#dataset2 |>
+#  diagnose_category() |>
+#  formattable()
 
-fed_yr_round_data <- dataset2 %>%
-  select(loc_id,
-         proj_period_id,
-         fed_in_apr,
-         fed_in_aug,
-         fed_in_dec,
-         fed_in_feb,
-         fed_in_jan,
-         fed_in_jul,
-         fed_in_jun,
-         fed_in_mar,
-         fed_in_may,
-         fed_in_nov,
-         fed_in_oct,
-         fed_in_sep) #|>
+#fed_yr_round_data <- dataset2 %>%
+#  select(loc_id,
+#         proj_period_id,
+#         fed_in_apr,
+#         fed_in_aug,
+#         fed_in_dec,
+#         fed_in_feb,
+#         fed_in_jan,
+#         fed_in_jul,
+#         fed_in_jun,
+#         fed_in_mar,
+#         fed_in_may,
+#         fed_in_nov,
+#         fed_in_oct,
+#         fed_in_sep) #|>
     #diagnose_category() |>
   #formattable()
 
-fed_yr_round_data <- dataset2 %>%
-  diagnose_category() |>
-    formattable()
-fed_yr_round_data
+#fed_yr_round_data <- dataset2 %>%
+#  diagnose_category() |>
+#    formattable()
+#fed_yr_round_data
 
-fit <- rpart(fed_yr_round_data) #This WILL produce a decision tree.
-fit
+#fit <- rpart(fed_yr_round_data) #This WILL produce a decision tree.
+#fit
 
-tree_default <- fed_yr_round_data |> 
-  rpart(type ~ ., data = _)
-tree_default
+#tree_default <- fed_yr_round_data |> 
+#  rpart(type ~ ., data = _)
+#tree_default
 
-tree_full <- fit |> 
-  rpart(type ~ . , data = _, 
-        control = rpart.control(minsplit = 2, cp = 0))
-rpart.plot(tree_full, extra = 2, 
-           roundint=FALSE,
-            box.palette = list("Gy", "Gn", "Bu", "Bn", 
-                               "Or", "Rd", "Pu")) # specify 7 colors
+#tree_full <- fit |> 
+#  rpart(type ~ . , data = _, 
+#        control = rpart.control(minsplit = 2, cp = 0))
+#rpart.plot(tree_full, extra = 2, 
+#           roundint=FALSE,
+#            box.palette = list("Gy", "Gn", "Bu", "Bn", 
+#                               "Or", "Rd", "Pu")) # specify 7 colors
 
-fed_data_all_months <- data.frame(dataset2) |>
-  group_by(proj_period_id, fed_in_apr, fed_in_may, fed_in_jun, fed_in_aug, fed_in_dec, fed_in_feb, fed_in_jan, fed_in_jul, fed_in_mar, fed_in_nov, fed_in_oct, fed_in_sep) |>
-    summarise.groups(count = n())
-fed_data_all_months
+#fed_data_all_months <- data.frame(dataset2) |>
+#  group_by(proj_period_id, fed_in_apr, fed_in_may, fed_in_jun, fed_in_aug, #fed_in_dec, fed_in_feb, fed_in_jan, fed_in_jul, fed_in_mar, fed_in_nov, #fed_in_oct, fed_in_sep) |>
+#    summarise.groups(count = n())
+#fed_data_all_months
 
-fed_in_apr_data <- dataset2|>
-  group_by("fed_in_apr", "fed_in_may") |>
-    summarise(count = n())
+#fed_in_apr_data <- dataset2|>
+#  group_by("fed_in_apr", "fed_in_may") |>
+#    summarise(count = n())
 
-fed_in_apr_data
+#fed_in_apr_data
 ```
 
 *Dataset 2 - Observation of unknown areas that account for plants, creatures, habitat, water, etc., throughout the years 2001-2020, which has a lot of gaps in the data.*
 
 *Once I narrow down the data to reliable data, then we can ask, "Can the birds that were observed in Dataset 1 live in the lands listed in Dataset 2?"*
-
-```{r}
-
-dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
-
-dataset2 <- as_tibble(dataset2)
-dataset2 |> glimpse()
-
-summary(dataset2)
-
-fed_yr_round_data <- dataset2 %>%
-  select(#fed_in_apr,
-         fed_in_aug,
-         fed_in_dec,
-         fed_in_feb,
-         fed_in_jan,
-         fed_in_jul,
-         fed_in_jun,
-         fed_in_mar,
-         fed_in_may,
-         fed_in_nov,
-         fed_in_oct,
-         fed_in_sep)
-
-fit <- rpart(fed_yr_round_data)
-fit
-
-library(rpart.plot)
-rpart.plot(fit, extra = 2)
-
-```
 
 See how much feeding has been done throughout the months over the years.
 

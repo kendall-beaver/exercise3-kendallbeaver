@@ -189,10 +189,13 @@ dataset2 |> summary()
 ```
 
 ```{r}
-notbad_ok_data <- dataset2 |> # This is the table that guides you on what values to remove.
+missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable()
-notbad_ok_data
+missing_grades_data
+
+notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK")) #Removing bad data
+notbad_and_ok_data
 ```
 
 ```{r}

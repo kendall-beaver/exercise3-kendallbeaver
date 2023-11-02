@@ -215,6 +215,10 @@ dataset2
 This is my "missing grades" list of how many NA values are in each category -- very valuable since D2 has a lot of missing data. A ratio of missing values below 20%.\
 -There are 4 types of bird feeders contained in this data.
 
+This is the D2 that I'm trying to turn into a decision tree, to find the areas/location IDs that classify the best types of data based on number of bird feeders in the area, shelter available, predators present, etc.
+
+**D2 Decision Tree**
+
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
   plot_na_pareto(only_na = FALSE, plot = FALSE) |>
@@ -262,6 +266,9 @@ no_na_values_dataset2 |> summary()
 
 library(writexl)
 write_xlsx(no_na_values_dataset2, path = "dataset2_clean.xlsx")
+
+birdfeeder_count <- c(0:14, 16, 22)
+birdfeeder_count
 
 #tree_default <- no_na_values_dataset2 |> 
 #  rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?

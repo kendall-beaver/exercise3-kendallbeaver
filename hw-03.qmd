@@ -233,16 +233,16 @@ columns_to_extract <- c("hab_dcid_woods",
 "proj_period_id")
 
 clean_dataset2 <- dataset2[, columns_to_extract]
-clean_dataset2
+clean_dataset2 #254,355 rows x 22 columns
 
-no_na_values_dataset2 <- na.omit(notbad_and_ok_data)
-no_na_values_dataset2
+no_na_values_dataset2 <- na.omit(clean_dataset2)
+no_na_values_dataset2 #121,918 x 22 columns
 
 tree_default <- no_na_values_dataset2 |> 
-  rpart(type ~ ., data = _)
+  rpart(type ~ ., data = _) # I think I need to choose the "response variable" and "predictor" to control my model...?
 tree_default
 
-fit <- rpart(notbad_and_ok_data) #The decision tree
+fit <- rpart(notbad_and_ok_data) #A simple decision tree where I'm not actually controlling the input and output...?
 fit
 ```
 

@@ -48,6 +48,8 @@ options(digits=3)
 
 **Dataset 1**
 
+This dataset has no missing values.
+
 ```{r}
 ### Load raw data.
 
@@ -66,10 +68,10 @@ dataset1 |> # Table of N/A values. Only 3 which I have since removed: snow_dep_a
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # Publishable table
 
-dataset1 |> # I like this plot.
-  plot_na_pareto(only_na = TRUE)
+dataset1 |> # The list of "missing grades" of NA values. 
+  plot_na_pareto(only_na = TRUE, plot = FALSE) # But data has no missing values so this isn't needed.
 
-dataset1 |> # Don't like this plot.
+dataset1 |> # The plot of "missing grades". But the data has no missing values.
   plot_na_intersect(only_na = TRUE)
 
 dataset1 <- dataset1 |>
@@ -88,6 +90,10 @@ dataset1 |>
 Dataset 1 - Observations of 10 species of birds were taken from 9 states in the US (NY, PA, VA, CA, MA, TX, OH, NC, MI) and 1 state in Canada (Ontario).
 
 I could combine the data based on vegetation that's observed in Dataset 2 with the longitude and latitude. So given a bird species which area/state would you most likely find it in?
+
+**Dataset 2:**
+
+This has 62 columns of data that has a lot of missing/NA values.
 
 ```{r}
 
@@ -159,7 +165,8 @@ I could combine the data based on vegetation that's observed in Dataset 2 with t
 dataset2 <- read_csv(here('PFW_count_site_data_public_2021.csv'))
 
 dataset2 <- as_tibble(dataset2)
-dataset2 |> glimpse()
+# dataset2 |> glimpse() # Don't use this if there's a lot of columns.
+dataset2 |> summary()
 
 dataset2 |>
   head() |>
@@ -184,23 +191,21 @@ dataset2
 #  mutate(across(where(is.numeric), factor, levels = c(TRUE, FALSE))) |>
 #  mutate(across(where(is.character), factor))
 # Data type is already factor, so no need to use this.
-
-dataset2 |> summary()
 ```
 
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
-  plot_na_pareto(only_na = TRUE, plot = FALSE) |>
+  plot_na_pareto(only_na = FALSE, plot = FALSE) |>
   formattable()
 missing_grades_data
 
-notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK")) #Removing bad data
+notbad_and_ok_data <- filter(missing_grades_data, grade %in% c("NotBad", "OK", "Good")) #This will keep the good variables where, relatively speaking, a minimium of NAs are quite low. Now I want to see if the decision tree algorithm will remove the NAs and plot the data. 
 notbad_and_ok_data
 ```
 
 ```{r}
 
-dataset2 |> # This is the plot that will guide you on what to remove.
+dataset2 |> # This is just the above, but "plot" isn't "FALSE".
   plot_na_pareto(only_na = TRUE)
 ```
 

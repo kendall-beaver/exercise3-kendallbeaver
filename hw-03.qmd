@@ -217,7 +217,7 @@ This is my "missing grades" list of how many NA values are in each category -- v
 
 This is the D2 that I'm trying to turn into a decision tree, to find the areas/location IDs that classify the best types of data based on number of bird feeders in the area, shelter available, predators present, etc.
 
-**D2 Decision Tree**
+**k-NN Analysis (The "Successful" Classification Winner)**
 
 ```{r}
 missing_grades_data <- dataset2 |> # This is the table that guides you on what values to remove.
@@ -254,8 +254,8 @@ columns_to_extract <- c("hab_dcid_woods",
 "housing_density",
 "numfeeders_suet",
 "squirrels",
-"loc_id",
-"proj_period_id")
+"loc_id", # I can't use this because it's a character, not a factor.
+"proj_period_id") #numfeeders_suet
 
 clean_dataset2 <- dataset2[, columns_to_extract]
 clean_dataset2 #254,355 rows x 22 columns
@@ -265,17 +265,52 @@ no_na_values_dataset2 #121,918 x 22 columns. BEST DATASET so far.
 
 no_na_values_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2019", "PFW_2020")) #254,355 rows x 22 columns, before I filter down only to 2019 & 2020 values.
 
-clean_dataset2 <- no_na_values_dataset2[, -22, ] #(19,940 × 21)
-clean_dataset2 |> glimpse() # Need to make "loc_id" the target class?
+# Below is to remove single records.
+class_freq <- table(no_na_values_dataset2$loc_id)
+valid_classes <- names(class_freq[class_freq > 1])
+new_clean_dataset2 <- no_na_values_dataset2[no_na_values_dataset2$loc_id %in% valid_classes, ]
+new_clean_dataset2 |> glimpse() #(11,324 rows × 21 columns)
+
+clean_dataset3 <- new_clean_dataset2[, -22, ] #(19,940 × 21)
+clean_dataset3
+clean_dataset2 <- clean_dataset3[, -21, ] #(19,940 × 20)
+clean_dataset <- as.data.frame(clean_dataset2)
+clean_dataset |> glimpse() # Need to make "loc_id" the target class?
 
 library(writexl)
-write_xlsx(clean_dataset2, path = "dataset2_clean.xlsx")
+#write_xlsx(clean_dataset2, path = "dataset2_clean.xlsx")
+write.csv(clean_dataset, "clean_dataset.csv", row.names = FALSE)
 
-set.seed(2000)
-clean_dataset2$loc_id |> table() # This will show me how many records correspond to each loc_id record. Good for removing single records.
-inTrain <- createDataPartition(y = clean_dataset2$loc_id, p = .8, list = FALSE)
-dataset2_train <- matrix_clean_dataset2 |> slice(inTrain)
-dataset2_test <- matrix_clean_dataset2 |> slice(-inTrain)
+### Doing kNN Alternative Classification because Decision Tree Analysis
+### won't work on dataset 2!!!
+
+set.seed(123)
+inTrain <- createDataPartition(y = clean_dataset$numfeeders_suet, p = .8)[[1]]
+inTrain <- as.matrix(inTrain)
+# inTrain <- as.tibble(inTrain_1)
+D2_train <- dplyr::slice(clean_dataset, inTrain)
+D2_train <- as.matrix(D2_train) #(9,060 × 20)
+D2_test <- dplyr::slice(clean_dataset, -inTrain)
+D2_test <- as.matrix(D2_test) #(2,264 × 20)
+
+knnFit <- D2_train |> train(type ~ ., #STILL CAN'T GET THIS TO WORK.
+  method = "knn",
+  data = _,
+  preProcess = "scale",
+    tuneLength = 5,
+  tuneGrid=data.frame(k = 1:10),
+    trControl = trainControl(method = "cv", indexOut = train_index))
+knnFit
+
+
+```
+
+**My Failed Attempts to try to get a Decision Tree to work**
+
+```{r}
+
+dataset2_train <- new_clean_dataset2 |> slice(inTrain)
+dataset2_test <- new_clean_dataset2 |> slice(-inTrain)
 
 knnFit <- matrix_clean_dataset2 |> 
   train(type ~ .,
@@ -296,9 +331,15 @@ knnFit <- matrix_clean_dataset2 |> train(type ~ .,
     trControl = trainControl(method = "cv", indexOut = train_index))
 knnFit
 
+no_na_values_dataset2
+#no_na_values_dataset2 <- no_na_values_dataset2[, !(names(no_na_values_dataset2) %in% c("loc_id", "proj_period_id"))]
+matrix_clean_dataset2 <- lapply(no_na_values_dataset2, as.integer)
+matrix_clean_dataset2 <- as.matrix(matrix_clean_dataset2)
+matrix_clean_dataset2 |> glimpse() # Transforming my list into integers.
+
 #######################################################################
-### The following was going to turn birdfeeder counts into factors.
-### Maybe ignore for now.
+### The following was going to turn birdfeeder counts into factors to
+### use with Decision Tree Analysis. Ignore for now.
 #######################################################################
 birdfeeder_count <- c(0:14, 16, 22)
 birdfeeder_count
@@ -321,19 +362,6 @@ print(categories)
 
 fit <- rpart(notbad_and_ok_data) #A simple decision tree where I'm not actually controlling the input and output...?
 fit
-```
-
-**K-Nearest Neighbors**
-
-```{r}
-
-# It's important that I create a full tree with my dataset in order to be able to run real tests to train my data against different classification models.
-
-no_na_values_dataset2
-#no_na_values_dataset2 <- no_na_values_dataset2[, !(names(no_na_values_dataset2) %in% c("loc_id", "proj_period_id"))]
-matrix_clean_dataset2 <- lapply(no_na_values_dataset2, as.integer)
-matrix_clean_dataset2 <- as.matrix(matrix_clean_dataset2)
-matrix_clean_dataset2 |> glimpse() # Transforming my list into integers.
 ```
 
 This is the graph of all missing values, which the "only_na = FALSE" shows the relationship of two density curves, which "only_na = TRUE" has all data colored in red, indicating that all data should be removed.

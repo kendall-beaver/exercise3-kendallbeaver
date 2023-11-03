@@ -272,6 +272,7 @@ library(writexl)
 write_xlsx(clean_dataset2, path = "dataset2_clean.xlsx")
 
 set.seed(2000)
+clean_dataset2$loc_id |> table() # This will show me how many records correspond to each loc_id record. Good for removing single records.
 inTrain <- createDataPartition(y = clean_dataset2$loc_id, p = .8, list = FALSE)
 dataset2_train <- matrix_clean_dataset2 |> slice(inTrain)
 dataset2_test <- matrix_clean_dataset2 |> slice(-inTrain)

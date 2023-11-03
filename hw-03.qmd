@@ -293,8 +293,9 @@ fit
 
 ```{r}
 
-matrix_clean_dataset2 <- as.matrix(no_na_values_dataset2)
-matrix_clean_dataset2
+no_na_values_dataset2 <- no_na_values_dataset2[, !(names(no_na_values_dataset2) %in% c("loc_id", "proj_period_id"))]
+matrix_clean_dataset2 <- lapply(no_na_values_dataset2, as.integer)
+matrix_clean_dataset2 |> glimpse()
 
 knnFit <- matrix_clean_dataset2 |> 
   train(type ~ .,

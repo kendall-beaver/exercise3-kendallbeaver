@@ -298,6 +298,11 @@ matrix_clean_dataset2 <- lapply(no_na_values_dataset2, as.integer)
 matrix_clean_dataset2 <- as.matrix(matrix_clean_dataset2)
 matrix_clean_dataset2 |> glimpse() # Transforming my list into integers.
 
+set.seed(2000)
+inTrain <- createDataPartition(y = matrix_clean_dataset2$type, p = .8, list = FALSE)
+dataset2_train <- matrix_clean_dataset2 |> slice(inTrain)
+dataset2_test <- matrix_clean_dataset2 |> slice(-inTrain)
+
 knnFit <- matrix_clean_dataset2 |> 
   train(type ~ .,
         data = _,

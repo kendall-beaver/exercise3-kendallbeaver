@@ -262,7 +262,13 @@ clean_dataset2 #254,355 rows x 22 columns
 
 no_na_values_dataset2 <- na.omit(clean_dataset2)
 no_na_values_dataset2 #121,918 x 22 columns. BEST DATASET so far.
-no_na_values_dataset2 |> summary()
+
+no_na_values_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2019", "PFW_2020")) #254,355 rows x 22 columns, before I filter down only to 2019 & 2020 values.
+
+clean_dataset2 <- no_na_values_dataset2[, -22, ] #(19,940 × 21)
+clean_dataset2
+
+no_na_values_dataset2
 
 library(writexl)
 write_xlsx(no_na_values_dataset2, path = "dataset2_clean.xlsx")
@@ -293,7 +299,10 @@ fit
 
 ```{r}
 
-no_na_values_dataset2 <- no_na_values_dataset2[, !(names(no_na_values_dataset2) %in% c("loc_id", "proj_period_id"))]
+# It's important that I create a full tree with my dataset in order to be able to run real tests to train my data against different classification models.
+
+no_na_values_dataset2
+#no_na_values_dataset2 <- no_na_values_dataset2[, !(names(no_na_values_dataset2) %in% c("loc_id", "proj_period_id"))]
 matrix_clean_dataset2 <- lapply(no_na_values_dataset2, as.integer)
 matrix_clean_dataset2 <- as.matrix(matrix_clean_dataset2)
 matrix_clean_dataset2 |> glimpse() # Transforming my list into integers.

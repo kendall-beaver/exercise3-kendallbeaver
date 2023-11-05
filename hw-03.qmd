@@ -246,19 +246,19 @@ columns_to_extract <- c("hab_dcid_woods",
 "evgr_shrbs_atleast",
 "dcid_shrbs_atleast",
 "nearby_feeders",
-"population_atleast",
 "evgr_trees_atleast",
 "dcid_trees_atleast",
 "humans",
-"count_area_size_sq_m_atleast",
 "housing_density",
 "numfeeders_suet",
 "squirrels",
-"loc_id", # I can't use this because it's a character, not a factor.
-"proj_period_id") #numfeeders_suet
+"loc_id", 
+"proj_period_id") #or use "numfeeders_suet" for my D-tree
+#
+# I think these values are skewing everything: population_atleast, "count_area_size_sq_m_atleast",
 
 clean_dataset2 <- dataset2[, columns_to_extract]
-clean_dataset2 #254,355 rows x 22 columns
+clean_dataset2 #254,355 rows x 20 columns
 
 no_na_values_dataset2 <- na.omit(clean_dataset2)
 no_na_values_dataset2 #121,918 x 22 columns. BEST DATASET so far.
@@ -272,32 +272,32 @@ new_clean_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2
 #new_clean_dataset2 |> glimpse() #(11,324 rows × 21 columns)
 
 # Final stage of cleaning up data 
-clean_dataset3 <- new_clean_dataset2[, -22, ] #(19,940 × 21)
-# The above removes "PFW_[year]"
-clean_dataset3
+clean_dataset <- new_clean_dataset2[, -20, ] #(19,940 × 21)
+# This removes "PFW_[year]"
+clean_dataset
 
-clean_dataset3$count_area_size_sq_m_atleast <- as.integer(clean_dataset3$count_area_size_sq_m_atleast) # (decimals -> integers)
-clean_dataset3
+#clean_dataset$count_area_size_sq_m_atleast <- as.integer(clean_dataset$count_area_size_sq_m_atleast) # (decimals -> integers)
 
 #clean_dataset2 <- clean_dataset3[, -21, ] #(19,940 × 20)
-clean_dataset <- as.data.frame(clean_dataset3)
-clean_dataset |> glimpse() # Need to make "loc_id" the target class?
+#clean_dataset <- as.data.frame(clean_dataset3)
+#clean_dataset |> glimpse() # Need to make "loc_id" the target class?
 
-library(writexl)
+#library(writexl)
 #write_xlsx(clean_dataset2, path = "dataset2_clean.xlsx")
-write.csv(clean_dataset, "clean_dataset.csv", row.names = FALSE)
+#write.csv(clean_dataset, "clean_dataset.csv", row.names = FALSE)
 
 ### Doing kNN Alternative Classification because Decision Tree Analysis
 ### won't work on dataset 2!!!
 
 set.seed(123)
 inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8)[[1]]
-inTrain <- as.matrix(inTrain)
+#inTrain <- as.matrix(inTrain)
 # inTrain <- as.tibble(inTrain_1)
 D2_train <- dplyr::slice(clean_dataset, inTrain)
-D2_train <- as.matrix(D2_train) #(9,060 × 20)
+D2_train
+#D2_train <- as.matrix(D2_train) #(9,060 × 20)
 D2_test <- dplyr::slice(clean_dataset, -inTrain)
-D2_test <- as.matrix(D2_test) #(2,264 × 20)
+#D2_test <- as.matrix(D2_test) #(2,264 × 20)
 
 knnFit <- D2_train |> train(type ~ ., #STILL CAN'T GET THIS TO WORK.
   method = "knn",

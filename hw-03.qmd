@@ -272,8 +272,50 @@ new_clean_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2
 #new_clean_dataset2 |> glimpse() #(11,324 rows × 21 columns)
 
 # Final stage of cleaning up data 
-clean_dataset <- new_clean_dataset2[, -20, ] #(19,940 × 21)
+scaled_data <- new_clean_dataset2[, -20, ] #(19,940 × 21)
 # This removes "PFW_[year]"
+scaled_data
+str(scaled_data)
+
+scaled_data$loc_id <- substr(scaled_data$loc_id, nchar(scaled_data$loc_id) - 3, nchar(scaled_data$loc_id))
+scaled_data
+
+scaled_data[, c("hab_dcid_woods",
+"brsh_piles_atleast",
+"hab_water_fresh",
+"numfeeders_platfrm",
+"hab_mixed_woods",
+"numfeeders_ground",
+"hab_residential",
+"dogs",
+"cats",
+"evgr_shrbs_atleast",
+"dcid_shrbs_atleast",
+"nearby_feeders",
+"evgr_trees_atleast",
+"dcid_trees_atleast",
+"humans",
+"housing_density",
+"numfeeders_suet",
+"squirrels")] <- scale(scaled_data[, c("hab_dcid_woods",
+"brsh_piles_atleast",
+"hab_water_fresh",
+"numfeeders_platfrm",
+"hab_mixed_woods",
+"numfeeders_ground",
+"hab_residential",
+"dogs",
+"cats",
+"evgr_shrbs_atleast",
+"dcid_shrbs_atleast",
+"nearby_feeders",
+"evgr_trees_atleast",
+"dcid_trees_atleast",
+"humans",
+"housing_density",
+"numfeeders_suet",
+"squirrels")])
+clean_dataset <- as.data.frame(scaled_data)
 clean_dataset
 
 #clean_dataset$count_area_size_sq_m_atleast <- as.integer(clean_dataset$count_area_size_sq_m_atleast) # (decimals -> integers)
@@ -290,7 +332,9 @@ clean_dataset
 ### won't work on dataset 2!!!
 
 set.seed(123)
-inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8)[[1]]
+inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8, list = FALSE)
+Zoo_train <- Zoo |> slice(inTrain)
+# inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8)[[1]]
 #inTrain <- as.matrix(inTrain)
 # inTrain <- as.tibble(inTrain_1)
 D2_train <- dplyr::slice(clean_dataset, inTrain)

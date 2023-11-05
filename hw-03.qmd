@@ -277,7 +277,7 @@ scaled_data <- new_clean_dataset2[, -20, ] #(19,940 × 21)
 scaled_data
 str(scaled_data)
 
-scaled_data$loc_id <- substr(scaled_data$loc_id, nchar(scaled_data$loc_id) - 3, nchar(scaled_data$loc_id))
+scaled_data$loc_id <- substr(scaled_data$loc_id, nchar(scaled_data$loc_id) - 5, nchar(scaled_data$loc_id))
 scaled_data
 
 scaled_data[, c("hab_dcid_woods",
@@ -333,26 +333,31 @@ clean_dataset
 
 set.seed(123)
 inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8, list = FALSE)
-Zoo_train <- Zoo |> slice(inTrain)
-# inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8)[[1]]
+inTrain <- createDataPartition(y = clean_dataset$loc_id, p = .8)[[1]]
 #inTrain <- as.matrix(inTrain)
 # inTrain <- as.tibble(inTrain_1)
 D2_train <- dplyr::slice(clean_dataset, inTrain)
 D2_train
 #D2_train <- as.matrix(D2_train) #(9,060 × 20)
 D2_test <- dplyr::slice(clean_dataset, -inTrain)
+D2_test
 #D2_test <- as.matrix(D2_test) #(2,264 × 20)
 
+train_index <- createFolds(D2_train$loc_id, k = 10)
+
 knnFit <- D2_train |> train(type ~ ., #STILL CAN'T GET THIS TO WORK.
-  method = "knn",
   data = _,
+  method = "knn",
   preProcess = "scale",
-    tuneLength = 5,
-  tuneGrid=data.frame(k = 1:10),
+    tuneLength = 10,
     trControl = trainControl(method = "cv", indexOut = train_index))
 knnFit
 
+unique_class_counts <- unique(clean_dataset)
+unique_class_counts
 
+class_counts <- table(clean_dataset$loc_id)
+class_counts
 ```
 
 ```{r}

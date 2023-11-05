@@ -263,17 +263,18 @@ clean_dataset2 #254,355 rows x 22 columns
 no_na_values_dataset2 <- na.omit(clean_dataset2)
 no_na_values_dataset2 #121,918 x 22 columns. BEST DATASET so far.
 
-no_na_values_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2019", "PFW_2020")) #254,355 rows x 22 columns, before I filter down only to 2019 & 2020 values.
+new_clean_dataset2 <- filter(no_na_values_dataset2, proj_period_id %in% c("PFW_2020")) #(10,494 × 22)
 
-# Below is to remove single records.
-class_freq <- table(no_na_values_dataset2$loc_id)
-valid_classes <- names(class_freq[class_freq > 1])
-new_clean_dataset2 <- no_na_values_dataset2[no_na_values_dataset2$loc_id %in% valid_classes, ]
-new_clean_dataset2 |> glimpse() #(11,324 rows × 21 columns)
+### Below is to remove single records.
+#class_freq <- table(no_na_values_dataset2$loc_id)
+#valid_classes <- names(class_freq[class_freq > 1])
+#new_clean_dataset2 <- no_na_values_dataset2[no_na_values_dataset2$loc_id %in% valid_classes, ]
+#new_clean_dataset2 |> glimpse() #(11,324 rows × 21 columns)
 
 # Final stage of cleaning up data 
 clean_dataset3 <- new_clean_dataset2[, -22, ] #(19,940 × 21)
 # The above removes "PFW_[year]"
+clean_dataset3
 
 clean_dataset3$count_area_size_sq_m_atleast <- as.integer(clean_dataset3$count_area_size_sq_m_atleast) # (decimals -> integers)
 clean_dataset3

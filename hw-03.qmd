@@ -353,11 +353,8 @@ knnFit <- D2_train |> train(type ~ ., #STILL CAN'T GET THIS TO WORK.
     trControl = trainControl(method = "cv", indexOut = train_index))
 knnFit
 
-unique_class_counts <- unique(clean_dataset)
-unique_class_counts
-
-class_counts <- table(clean_dataset$loc_id)
-class_counts
+library(class)
+knn_model <- knn(train = D2_train, test = D2_test, cl = clean_dataset$numfeeders_suet, k = 10)
 ```
 
 ```{r}

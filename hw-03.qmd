@@ -90,6 +90,9 @@ dataset1 |> # Table of N/A values. Only 3 which I have since removed: snow_dep_a
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # Publishable table
 
+dataset1 <- filter(dataset1, Year %in% c("2021"))
+dataset1
+
 #dataset1 |> # The list of "missing grades" of NA values. 
   #plot_na_pareto(only_na = TRUE, plot = FALSE) # But data has no missing values so this isn't needed.
 
@@ -107,6 +110,29 @@ dataset1 |>
 # Plot showing the results of our imputation
 #rpart_na_imp_insulin |>
 #  plot()
+
+set.seed(123)
+inTrain <- createDataPartition(y = dataset1$species_code, p = .8, list = FALSE)
+#inTrain <- createDataPartition(y = dataset1$species_code, p = .8)[[1]]
+#inTrain <- as.matrix(inTrain)
+# inTrain <- as.tibble(inTrain_1)
+dataset1_train <- dplyr::slice(dataset1, inTrain)
+dataset1_train <- as.data.frame(dataset1_train)
+#D2_train <- as.matrix(D2_train) #(9,060 × 20)
+dataset1_test <- dplyr::slice(dataset1, -inTrain)
+dataset1_test
+#D2_test <- as.matrix(D2_test) #(2,264 × 20)
+
+train_index <- createFolds(dataset1$species_code, k = 10)
+train_index
+
+knnFit <- dataset1_train |> train(type ~ .,
+  data = _,
+  method = "knn",
+  preProcess = "scale",
+    tuneLength = 10,
+    trControl = trainControl(method = "cv", indexOut = train_index))
+knnFit
 ```
 
 **Dataset 2:**
@@ -118,7 +144,6 @@ This is just a basic overview of D2.
 
 # All 62 columns in the dataset:
 #
-#         loc_id,
 #         proj_period_id,	
 #         yard_type_pavement,
 #         yard_type_garden,
